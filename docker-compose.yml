@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      dockerfile: Dockerfile
+    container_name: it-graph
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/itgraph?user=admin&password=admin
+    depends_on:
+      - postgres
+    networks:
+      - it-graph_network
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: itgraph
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5442:5432"
+    networks:
+      - it-graph_network
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:  # Define and create the volume directly in Docker Compose
+
+networks:
+  it-graph_network:

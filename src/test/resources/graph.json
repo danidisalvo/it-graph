@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "a",
+      "x": 10,
+      "y": 20,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "b",
+      "x": 30,
+      "y": 40,
+      "type": "LEXEME"
+    },
+    {
+      "id": "c",
+      "x": 50,
+      "y": 60,
+      "type": "LEXEME"
+    }
+  ],
+  "edges": [
+    {
+      "source": "a",
+      "target": "b"
+    },
+    {
+      "source": "a",
+      "target": "c"
+    }
+  ]
+}
