@@ -4,16 +4,16 @@ import com.probendi.itgraph.Graph;
 import com.probendi.itgraph.node.NodeService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 
-import java.sql.SQLException;
 import java.util.Objects;
 
 /**
@@ -27,46 +27,41 @@ public class EdgeResource {
     @Inject
     EdgeService edgeService;
     @Inject
+    Graph graph;
+    @Inject
     NodeService nodeService;
 
     @POST
     @Transactional
-    public Response create(Edge edge) throws SQLException {
-        if (Objects.equals(edge.getSource(), edge.getTarget())) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("source and target must be different").build();
+    public Graph create(EdgeDTO edge) {
+        if (Objects.equals(edge.source(), edge.target())) {
+            throw new BadRequestException("source and target must be different");
         }
-        if (nodeService.findNode(edge.getSource()) == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Source node not found").build();
+        if (nodeService.findNode(edge.source()).isEmpty()) {
+            throw new BadRequestException("Source node not found");
         }
-        if (nodeService.findNode(edge.getTarget()) == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Target node not found").build();
+        if (nodeService.findNode(edge.target()).isEmpty()) {
+            throw new BadRequestException("Target node not found");
         }
-        if (edgeService.findEdge(edge.getSource(), edge.getTarget()) != null ||
-                edgeService.findEdge(edge.getTarget(), edge.getSource()) != null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Duplicated edge").build();
+        if (edgeService.findEdge(edge.source(), edge.target()).isPresent() ||
+                edgeService.findEdge(edge.target(), edge.source()).isPresent()) {
+            throw new BadRequestException("Duplicated edge");
         }
         edgeService.createEdge(edge);
-        return Response.ok(generateGraph()).build();
+        return graph.generateGraph();
     }
 
     @Path("/{source}/{target}")
     @DELETE
     @Transactional
-    public Response delete(@PathParam("source") String source, @PathParam("target") String target) throws SQLException {
-        if (edgeService.findEdge(source, target) != null) {
+    public Graph delete(@PathParam("source") String source, @PathParam("target") String target) {
+        if (edgeService.findEdge(source, target).isPresent()) {
             edgeService.deleteEdge(source, target);
-        } else if (edgeService.findEdge(target, source) != null) {
+        } else if (edgeService.findEdge(target, source).isPresent()) {
             edgeService.deleteEdge(target, source);
         } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new NotFoundException();
         }
-        return Response.ok(generateGraph()).build();
-    }
-
-    private Graph generateGraph() throws SQLException {
-        Graph graph = new Graph();
-        graph.setNodes(nodeService.findAll());
-        graph.setEdges(edgeService.findAll());
-        return graph;
+        return graph.generateGraph();
     }
 }

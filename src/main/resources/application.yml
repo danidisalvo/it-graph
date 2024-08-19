@@ -1,0 +1,25 @@
+quarkus:
+  log:
+    level: "INFO"
+
+  # DB configuration
+  datasource:
+    db-kind: "postgresql"
+    jdbc:
+      url: "jdbc:postgresql://localhost:5432/it-graph"
+    username: "postgres"
+    password: "postgres"
+  hibernate-orm:
+    dialect: "org.hibernate.dialect.PostgreSQLDialect"
+    database:
+      generation: "update"
+
+  # Quinoa configuration
+  quinoa:
+    package-manager-install:
+      node-version: "20.10.0"
+      npm-version: "10.2.3"
+    dev-server:
+      port: 3000
+    ui-dir: "src/main/webui"
+    build-dir: "build"

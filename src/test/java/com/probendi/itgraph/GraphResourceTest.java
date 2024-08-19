@@ -31,8 +31,8 @@ class GraphResourceTest {
 
     @BeforeEach
     @Transactional
-    public void setup() throws SQLException {
-        nodeService.deleteAll();
+    public void setup() {
+        nodeService.deleteAllNodes();
     }
 
     @Test

@@ -31,7 +31,7 @@ class EdgeResourceTest {
     @BeforeEach
     @Transactional
     public void setup() throws SQLException {
-        nodeService.deleteAll();
+        nodeService.deleteAllNodes();
     }
 
     @Test

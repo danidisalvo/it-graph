@@ -1,18 +1,36 @@
 package com.probendi.itgraph.node;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.Objects;
 
 /**
  * A graph's node.
  */
+@Entity
+@Table(name = "nodes")
 @JsonPropertyOrder({"id", "x", "y", "type"})
 public class Node {
 
+    @Id
+    @NotBlank(message = "id must not be blank")
     private String id;
+    @PositiveOrZero
     private int x;
+    @PositiveOrZero
     private int y;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "type must not be null")
     private NodeType type;
 
     public Node() {
@@ -30,9 +48,6 @@ public class Node {
     }
 
     public Node setId(String id) {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("id cannot be null or blank");
-        }
         this.id = id;
         return this;
     }
@@ -42,9 +57,6 @@ public class Node {
     }
 
     public Node setX(int x) {
-        if (x < 0) {
-            throw new IllegalArgumentException("x cannot be negative");
-        }
         this.x = x;
         return this;
     }
@@ -54,9 +66,6 @@ public class Node {
     }
 
     public Node setY(int y) {
-        if (y < 0) {
-            throw new IllegalArgumentException("y cannot be negative");
-        }
         this.y = y;
         return this;
     }
@@ -66,9 +75,6 @@ public class Node {
     }
 
     public Node setType(NodeType type) {
-        if (type == null) {
-            throw new IllegalArgumentException("type cannot be null");
-        }
         this.type = type;
         return this;
     }

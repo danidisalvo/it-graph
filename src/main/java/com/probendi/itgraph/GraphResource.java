@@ -34,7 +34,7 @@ public class GraphResource {
     @DELETE
     @Transactional
     public Response clear() throws SQLException {
-        nodeService.deleteAll();
+        nodeService.deleteAllNodes();
         return Response.noContent().build();
     }
 
@@ -44,7 +44,7 @@ public class GraphResource {
     @Path("/")
     public Response get() throws SQLException {
         Graph graph = new Graph();
-        graph.setNodes(nodeService.findAll());
+        graph.setNodes(nodeService.findAllNodes());
         graph.setEdges(edgeService.findAll());
         return Response.ok(graph).build();
     }

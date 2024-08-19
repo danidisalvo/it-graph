@@ -6,6 +6,8 @@ import com.probendi.itgraph.edge.EdgeService;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @QuarkusTest
 class NodeResourceTest {
 
+    @PersistenceContext
+    private EntityManager em;
+
     @Inject
     EdgeService edgeService;
     @Inject
@@ -30,14 +35,14 @@ class NodeResourceTest {
     @BeforeEach
     @Transactional
     public void setup() throws SQLException {
-        nodeService.deleteAll();
+        em.createQuery("delete from Node").executeUpdate();
     }
 
     @Test
     public void tesCreate_OK() {
         Node a = new Node("a", 0, 0, NodeType.LEXEME);
 
-        Graph actualGraph = given()
+        Graph graph = given()
                 .contentType(ContentType.JSON)
                 .body(a)
                 .when().post("/node")
@@ -46,7 +51,7 @@ class NodeResourceTest {
                 .contentType(ContentType.JSON)
                 .extract().as(Graph.class);
 
-        assertTrue(actualGraph.getNodes().contains(a));
+        assertTrue(graph.getNodes().contains(a));
     }
 
     @Test
@@ -132,7 +137,7 @@ class NodeResourceTest {
 
         Node updatedNode = new Node(a.getId(), 1, 1, NodeType.DIVISION);
 
-        Graph actualGraph = given()
+        Graph graph = given()
                 .contentType(ContentType.JSON)
                 .body(b)
                 .when().put("/node/b")
@@ -140,11 +145,11 @@ class NodeResourceTest {
                 .statusCode(Response.Status.OK.getStatusCode())
                 .extract().as(Graph.class);
 
-        assertTrue(actualGraph.getNodes().contains(updatedNode));
-        assertTrue(actualGraph.getNodes().contains(b));
-        assertTrue(actualGraph.getNodes().contains(c));
-        assertTrue(actualGraph.getEdges().contains(ab));
-        assertTrue(actualGraph.getEdges().contains(ac));
+        assertTrue(graph.getNodes().contains(updatedNode));
+        assertTrue(graph.getNodes().contains(b));
+        assertTrue(graph.getNodes().contains(c));
+        assertTrue(graph.getEdges().contains(ab));
+        assertTrue(graph.getEdges().contains(ac));
     }
 
     @Test

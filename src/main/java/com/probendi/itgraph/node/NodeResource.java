@@ -3,18 +3,16 @@ package com.probendi.itgraph.node;
 import com.probendi.itgraph.Graph;
 import com.probendi.itgraph.edge.EdgeService;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
-import java.sql.SQLException;
 
 /**
  * Exposes the RESTful endpoints to add, delete, and update nodes.
@@ -25,49 +23,37 @@ import java.sql.SQLException;
 public class NodeResource {
 
     @Inject
-    EdgeService edgeService;
+    Graph graph;
     @Inject
     NodeService nodeService;
 
     @POST
-    @Transactional
-    public Response create(Node node) throws SQLException {
-        if (nodeService.findNode(node.getId()) != null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Duplicated node").build();
+    public Graph create(Node node) {
+        if (nodeService.findNode(node.getId()).isPresent()) {
+            throw new BadRequestException("Duplicated node");
         }
         nodeService.createNode(node);
-        return Response.ok(generateGraph()).build();
+        return graph.generateGraph();
     }
 
     @Path("/{id}")
     @DELETE
-    @Transactional
-    public Response delete(@PathParam("id") String id) throws SQLException {
-        if (nodeService.findNode(id) == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+    public Graph delete(@PathParam("id") String id) {
+        if (nodeService.deleteNode(id) == 0) {
+            throw new NotFoundException();
         }
-        nodeService.deleteNode(id);
-        return Response.ok(generateGraph()).build();
+        return graph.generateGraph();
     }
 
     @Path("/{id}")
     @PUT
-    @Transactional
-    public Response update(@PathParam("id") String id, Node node) throws SQLException {
+    public Graph update(@PathParam("id") String id, Node node) {
         if (!id.equals(node.getId())) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            throw new BadRequestException();
         }
-        if (nodeService.findNode(id) == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if (nodeService.updateNode(node) == 0) {
+            throw new NotFoundException();
         }
-        nodeService.updateNode(node);
-        return Response.ok(generateGraph()).build();
-    }
-
-    private Graph generateGraph() throws SQLException {
-        Graph graph = new Graph();
-        graph.setNodes(nodeService.findAll());
-        graph.setEdges(edgeService.findAll());
-        return graph;
+        return graph.generateGraph();
     }
 }
