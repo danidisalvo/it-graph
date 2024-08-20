@@ -1,9 +1,6 @@
-package com.probendi.itgraph.node;
+package com.probendi.itgraph;
 
-import com.probendi.itgraph.Graph;
-import com.probendi.itgraph.edge.EdgeService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.NotFoundException;
@@ -17,43 +14,40 @@ import jakarta.ws.rs.core.MediaType;
 /**
  * Exposes the RESTful endpoints to add, delete, and update nodes.
  */
-@Path("/node")
+@Path("/nodes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class NodeResource {
 
     @Inject
-    Graph graph;
+    GraphService graphService;
     @Inject
     NodeService nodeService;
 
     @POST
-    public Graph create(Node node) {
-        if (nodeService.findNode(node.getId()).isPresent()) {
-            throw new BadRequestException("Duplicated node");
-        }
+    public Graph createNode(Node node) {
         nodeService.createNode(node);
-        return graph.generateGraph();
+        return graphService.getGraph();
     }
 
     @Path("/{id}")
     @DELETE
-    public Graph delete(@PathParam("id") String id) {
+    public Graph deleteNode(@PathParam("id") String id) {
         if (nodeService.deleteNode(id) == 0) {
             throw new NotFoundException();
         }
-        return graph.generateGraph();
+        return graphService.getGraph();
     }
 
     @Path("/{id}")
     @PUT
-    public Graph update(@PathParam("id") String id, Node node) {
+    public Graph updateNode(@PathParam("id") String id, Node node) {
         if (!id.equals(node.getId())) {
-            throw new BadRequestException();
+            throw new IllegalArgumentException("id does not match node's id");
         }
         if (nodeService.updateNode(node) == 0) {
             throw new NotFoundException();
         }
-        return graph.generateGraph();
+        return graphService.getGraph();
     }
 }

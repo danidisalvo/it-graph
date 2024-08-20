@@ -4,40 +4,18 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
+/**
+ * Allows RESTful endpoints to return custom error responses for {@link IllegalArgumentException}s.
+ *
+ * @since 1.0.0
+ */
 @Provider
-public class CustomExceptionMapper implements ExceptionMapper<Throwable> {
+public class CustomExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
 
     @Override
-    public Response toResponse(Throwable exception) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setMessage("An internal server error occurred");
-        errorResponse.setDetails(exception.getMessage());
-
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(errorResponse)
+    public Response toResponse(IllegalArgumentException e) {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new ErrorResponse("BAD_REQUEST", e.getMessage()))
                 .build();
-    }
-
-    public static class ErrorResponse {
-        private String message;
-        private String details;
-
-        // Getters and Setters
-
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
-
-        public String getDetails() {
-            return details;
-        }
-
-        public void setDetails(String details) {
-            this.details = details;
-        }
     }
 }

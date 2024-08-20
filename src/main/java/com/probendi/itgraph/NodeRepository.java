@@ -1,12 +1,10 @@
-package com.probendi.itgraph.node;
+package com.probendi.itgraph;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Provides methods for executing CRUD operations on a {@link Node}.
@@ -44,6 +42,7 @@ public class NodeRepository {
     public int deleteNode(String id) {
         var found = em.find(Node.class, id);
         if (found != null) {
+            em.createNamedQuery("Edge.deleteMany").setParameter("id", found).executeUpdate();
             em.remove(found);
             return 1;
         }
@@ -55,8 +54,33 @@ public class NodeRepository {
      *
      * @return all nodes
      */
-    public List<Node> findAllNodes() {
-        return em.createQuery("SELECT n FROM Node n", Node.class).getResultList();
+    @SuppressWarnings("unchecked")
+    public List<NodeDTO> findAllNodes() {
+        List<Object[]> rows = em.createNativeQuery(
+                        "SELECT n.id, n.x, n.y, n.type, e.target FROM nodes AS n " +
+                                "LEFT JOIN edges AS e ON n.id = e.source")
+                .getResultList();
+
+        Map<String, NodeDTO> map = new HashMap<>();
+
+        for (Object[] row : rows) {
+            var id = (String) row[0];
+            var x = (Integer) row[1];
+            var y = (Integer) row[2];
+            var type = NodeType.valueOf((String) row[3]);
+            var target = row.length > 4 ? (String) row[4] : null;
+
+            NodeDTO nodeDTO = map.get(id);
+            if (nodeDTO == null) {
+                nodeDTO = new NodeDTO(id, x, y, type);
+                map.put(id, nodeDTO);
+            }
+            if (target != null) {
+                nodeDTO.edges().add(new Edge(id, target));
+            }
+        }
+
+        return new ArrayList<>(map.values());
     }
 
     /**
@@ -76,15 +100,14 @@ public class NodeRepository {
      * @return the number of updated nodes
      */
     public int updateNode(Node node) {
-        try {
-            var found = em.find(Node.class, node.getId());
+        var found = em.find(Node.class, node.getId());
+        if (found != null) {
             found.setX(node.getX());
             found.setY(node.getY());
             found.setType(node.getType());
             em.merge(found);
             return 1;
-        } catch (NoResultException e) {
-            return 0;
         }
+        return 0;
     }
 }

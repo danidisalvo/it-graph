@@ -1,4 +1,4 @@
-package com.probendi.itgraph.node;
+package com.probendi.itgraph;
 
 /**
  * A node's type.

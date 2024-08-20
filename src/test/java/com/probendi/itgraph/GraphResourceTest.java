@@ -1,105 +1,112 @@
 package com.probendi.itgraph;
 
-import com.probendi.itgraph.edge.Edge;
-import com.probendi.itgraph.edge.EdgeService;
-import com.probendi.itgraph.node.Node;
-import com.probendi.itgraph.node.NodeService;
-import com.probendi.itgraph.node.NodeType;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.probendi.itgraph.GraphResource.STATUS_UP;
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 class GraphResourceTest {
 
-    @Inject
-    EdgeService edgeService;
-    @Inject
-    NodeService nodeService;
+    @PersistenceContext
+    private EntityManager em;
+
+    private final List<NodeDTO> nodes = new ArrayList<>();
+    private final List<Edge> edges = new ArrayList<>();
 
     @BeforeEach
     @Transactional
     public void setup() {
-        nodeService.deleteAllNodes();
+        nodes.clear();
+        edges.clear();
+
+        em.createQuery("delete from Node").executeUpdate();
+
+        nodes.add(new NodeDTO("a", 10, 20, NodeType.OPPOSITION));
+        nodes.add(new NodeDTO("b", 30, 40, NodeType.LEXEME));
+        nodes.add(new NodeDTO("c", 50, 60, NodeType.LEXEME));
+        edges.add(new Edge("a", "b"));
+        edges.add(new Edge("a", "c"));
+
+        Node a = new Node(nodes.get(0));
+        Node b = new Node(nodes.get(1));
+        Node c = new Node(nodes.get(2));
+
+        a.addEdge(b).addEdge(c);
+
+        em.persist(a);
+        em.persist(b);
+        em.persist(c);
     }
 
     @Test
-    void testHealth() {
-        given()
-                .when().get("/graph/health")
+    public void clearGraph() {
+        var graph = given()
+                .when()
+                .delete("/graph")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
-                .body(is(STATUS_UP));
+                .contentType(ContentType.JSON)
+                .log()
+                .body()
+                .extract().as(Graph.class);
+
+        assertTrue(graph.isEmpty());
     }
 
     @Test
-    public void testGet() throws SQLException {
-        Node a = new Node("a", 10, 20, NodeType.OPPOSITION);
-        Node b = new Node("b", 30, 40, NodeType.LEXEME);
-        Node c = new Node("c", 50, 60, NodeType.LEXEME);
-        Edge ab = new Edge("a", "b");
-        Edge ac = new Edge("a", "c");
+    public void getGraph() {
+        var graph = new Graph().setNodes(nodes).setEdges(edges);
 
-        addNodesAndEdges(List.of(a, b, c), List.of(ab, ac));
-
-        Graph graph = new Graph();
-        graph.setNodes(List.of(a, b, c));
-        graph.setEdges(List.of(ab, ac));
-
-        Graph actualGraph = given()
-                .when().get("/graph")
+        var actualGraph = given()
+                .when()
+                .get("/graph")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
-                .contentType("application/json")
+                .contentType(ContentType.JSON)
+                .log()
+                .body()
                 .extract().as(Graph.class);
 
         assertEquals(graph, actualGraph);
     }
 
     @Test
-    public void testPut_OK() {
+    public void uploadGraph() {
+        var a = new NodeDTO("a", 100, 200, NodeType.OPPOSITION);
+        var b = new NodeDTO("b", 300, 400, NodeType.LEXEME);
+        var c = new NodeDTO("c", 500, 600, NodeType.LEXEME);
+        var ab = new Edge("a", "b");
+        var ac = new Edge("a", "c");
 
-        Node a = new Node("a", 10, 20, NodeType.OPPOSITION);
-        Node b = new Node("b", 30, 40, NodeType.LEXEME);
-        Node c = new Node("c", 50, 60, NodeType.LEXEME);
-        Edge ab = new Edge("a", "b");
-        Edge ac = new Edge("a", "c");
-
-        Graph graph = new Graph();
+        var graph = new Graph();
         graph.setNodes(List.of(a, b, c));
         graph.setEdges(List.of(ab, ac));
 
-        Graph actualGraph = given()
+        var actualGraph = given()
                 .contentType(ContentType.JSON)
                 .body(graph)
-                .when().put("/graph")
+                .when()
+                .put("/graph")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(ContentType.JSON)
-                .extract().as(Graph.class);
+                .log()
+                .body()
+                .extract()
+                .as(Graph.class);
 
         assertEquals(graph, actualGraph);
-    }
-
-    @Transactional
-    void addNodesAndEdges(List<Node> nodes, List<Edge> edges) throws SQLException {
-        for (Node node : nodes) {
-            nodeService.createNode(node);
-        }
-        for (Edge edge : edges) {
-            edgeService.createEdge(edge);
-        }
     }
 }

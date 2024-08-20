@@ -1,73 +1,48 @@
 package com.probendi.itgraph;
 
-import com.probendi.itgraph.edge.Edge;
-import com.probendi.itgraph.edge.EdgeService;
-import com.probendi.itgraph.node.Node;
-import com.probendi.itgraph.node.NodeService;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-
-import java.sql.SQLException;
 
 /**
  * Exposes the RESTful endpoints to upload and download a graph.
  */
+@Produces(MediaType.APPLICATION_JSON)
 @Path("/graph")
 public class GraphResource {
 
-    public static final String STATUS_UP = "{\"status\": \"up\"}";
-
     @Inject
-    EdgeService edgeService;
+    GraphService service;
 
-    @Inject
-    NodeService nodeService;
-
+    /**
+     * Clears the graph.
+     *
+     * @return the graph
+     */
     @DELETE
-    @Transactional
-    public Response clear() throws SQLException {
-        nodeService.deleteAllNodes();
-        return Response.noContent().build();
+    public Graph clearGraph() {
+        return service.clearGraph();
     }
 
+    /**
+     * Returns the graph.
+     *
+     * @return the graph
+     */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    @Path("/")
-    public Response get() throws SQLException {
-        Graph graph = new Graph();
-        graph.setNodes(nodeService.findAllNodes());
-        graph.setEdges(edgeService.findAll());
-        return Response.ok(graph).build();
+    public Graph getGraph() {
+        return service.getGraph();
     }
 
-    @GET
-    @Path("/health")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response health() {
-        return Response.ok(STATUS_UP).build();
-    }
-
+    /**
+     * Uploads a graph.
+     *
+     * @param graph the graph to be uploaded
+     * @return the graph
+     */
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    @Path("/")
-    public Response put(Graph graph) throws SQLException {
-        for (Node node : graph.getNodes()) {
-            nodeService.createNode(node);
-        }
-        for (Edge edge : graph.getEdges()) {
-            edgeService.createEdge(edge);
-        }
-        return Response.ok(graph).build();
+    public Graph uploadGraph(Graph graph) {
+        return service.uploadGraph(graph);
     }
 }

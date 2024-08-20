@@ -1,6 +1,5 @@
-package com.probendi.itgraph.edge;
+package com.probendi.itgraph;
 
-import com.probendi.itgraph.*;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.persistence.EntityManager;
@@ -19,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
-class EdgeResourceTest {
+class NodeResourceTest {
 
     @PersistenceContext
     private EntityManager em;
@@ -55,13 +54,13 @@ class EdgeResourceTest {
 
     @Test
     public void create() {
-        var edge = new Edge("b", "c");
+        var a = new NodeDTO("new-node", 0, 0, NodeType.LEXEME);
 
         var graph = given()
                 .contentType(ContentType.JSON)
-                .body(edge)
+                .body(a)
                 .when()
-                .post("/edges/b/c")
+                .post("/nodes")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(ContentType.JSON)
@@ -70,71 +69,32 @@ class EdgeResourceTest {
                 .extract()
                 .as(Graph.class);
 
-        assertTrue(graph.getEdges().contains(edge));
+        assertTrue(graph.getNodes().contains(a));
     }
 
     @Test
-    public void create_BAD_REQUEST_SameSourceAndTarget() {
+    public void create_BAD_REQUEST() {
+        var a = new NodeDTO("a", 0, 0, NodeType.LEXEME);
+
         given()
                 .contentType(ContentType.JSON)
+                .body(a)
                 .when()
-                .post("/edges/source/source")
+                .post("/nodes")
                 .then()
                 .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
                 .contentType(ContentType.JSON)
                 .log()
                 .body()
-                .body(is("{\"message\":\"BAD_REQUEST\",\"details\":\"Source and target must be different\"}"));
+                .body(is("{\"message\":\"BAD_REQUEST\",\"details\":\"Duplicated node\"}"));
     }
 
     @Test
-    public void create_BAD_REQUEST_SourceNotFound() {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/edges/not-found/a")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                .contentType(ContentType.JSON)
-                .log()
-                .body()
-                .body(is("{\"message\":\"BAD_REQUEST\",\"details\":\"Source not found\"}"));
-    }
-
-    @Test
-    public void create_BAD_REQUEST_TargetNotFound() {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/edges/a/not-found")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                .contentType(ContentType.JSON)
-                .log()
-                .body()
-                .body(is("{\"message\":\"BAD_REQUEST\",\"details\":\"Target not found\"}"));
-    }
-
-    @Test
-    public void create_BAD_REQUEST_Duplicated() {
-        given()
-                .contentType(ContentType.JSON)
-                .when()
-                .post("/edges/a/b")
-                .then()
-                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
-                .contentType(ContentType.JSON)
-                .log()
-                .body()
-                .body(is("{\"message\":\"BAD_REQUEST\",\"details\":\"Duplicated edge\"}"));
-    }
-
-    @Test
-    public void delete() {
+    public void delete_a() {
         var graph = given()
                 .contentType(ContentType.JSON)
                 .when()
-                .delete("/edges/a/b")
+                .delete("/nodes/a")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
                 .contentType(ContentType.JSON)
@@ -143,7 +103,31 @@ class EdgeResourceTest {
                 .extract()
                 .as(Graph.class);
 
+        assertFalse(graph.getNodes().contains(nodes.getFirst()));
+        assertTrue(graph.getNodes().contains(nodes.get(1)));
+        assertTrue(graph.getNodes().contains(nodes.get(2)));
+        assertTrue(graph.getEdges().isEmpty());
+    }
+
+    @Test
+    public void delete_b() {
+        var graph = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/nodes/b")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(ContentType.JSON)
+                .log()
+                .body()
+                .extract()
+                .as(Graph.class);
+
+        assertTrue(graph.getNodes().contains(nodes.get(0)));
+        assertFalse(graph.getNodes().contains(nodes.get(1)));
+        assertTrue(graph.getNodes().contains(nodes.get(2)));
         assertFalse(graph.getEdges().contains(edges.getFirst()));
+        assertTrue(graph.getEdges().contains(edges.get(1)));
     }
 
     @Test
@@ -151,10 +135,63 @@ class EdgeResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .delete("/edges/b/c")
+                .delete("/nodes/z")
                 .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode())
+                .log()
+                .body();
+    }
+
+    @Test
+    public void update() {
+        var updatedNode = new NodeDTO("a", 1, 1, NodeType.DIVISION);
+
+        var graph = given()
+                .contentType(ContentType.JSON)
+                .body(updatedNode)
+                .when()
+                .put("/nodes/a")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
                 .log()
                 .body()
-                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
+                .extract()
+                .as(Graph.class);
+
+        assertTrue(graph.getNodes().contains(updatedNode));
+        assertTrue(graph.getNodes().contains(nodes.get(1)));
+        assertTrue(graph.getNodes().contains(nodes.get(2)));
+        assertTrue(graph.getEdges().contains(edges.get(0)));
+        assertTrue(graph.getEdges().contains(edges.get(1)));
+    }
+
+    @Test
+    public void update_BAD_REQUEST() {
+        var a = new Node("a", 0, 0, NodeType.LEXEME);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(a)
+                .when()
+                .put("/nodes/b")
+                .then()
+                .statusCode(Response.Status.BAD_REQUEST.getStatusCode())
+                .log()
+                .body();
+    }
+
+    @Test
+    public void update_NOT_FOUND() {
+        var z = new Node("z", 0, 0, NodeType.LEXEME);
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(z)
+                .when()
+                .put("/nodes/z")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode())
+                .log()
+                .body();
     }
 }

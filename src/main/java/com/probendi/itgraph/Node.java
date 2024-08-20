@@ -1,17 +1,12 @@
-package com.probendi.itgraph.node;
+package com.probendi.itgraph;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A graph's node.
@@ -33,6 +28,14 @@ public class Node {
     @NotNull(message = "type must not be null")
     private NodeType type;
 
+    @ManyToMany
+    @JoinTable(
+            name = "edges",
+            joinColumns = @JoinColumn(name = "source"),
+            inverseJoinColumns = @JoinColumn(name = "target")
+    )
+    private Set<Node> edges = new HashSet<>();
+
     public Node() {
     }
 
@@ -41,6 +44,10 @@ public class Node {
         setX(x);
         setY(y);
         setType(type);
+    }
+
+    public Node(NodeDTO node) {
+        this(node.id(), node.x(), node.y(), node.type());
     }
 
     public String getId() {
@@ -78,6 +85,26 @@ public class Node {
         this.type = type;
         return this;
     }
+
+    public Set<Node> getEdges() {
+        return edges;
+    }
+
+    public Node setEdges(Set<Node> nodes) {
+        edges.clear();
+        nodes.forEach(this::addEdge);
+        return this;
+    }
+
+    public Node addEdge(Node node) {
+        edges.add(node);
+        return this;
+    }
+
+    public boolean removeEdge(Node node) {
+        return edges.remove(node);
+    }
+
 
     @Override
     public boolean equals(Object o) {

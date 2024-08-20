@@ -1,14 +1,10 @@
 package com.probendi.itgraph;
 
-import com.probendi.itgraph.edge.Edge;
-import com.probendi.itgraph.edge.EdgeDTO;
-import com.probendi.itgraph.edge.EdgeService;
-import com.probendi.itgraph.node.Node;
-import com.probendi.itgraph.node.NodeService;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,36 +12,30 @@ import java.util.Objects;
  * A graph contains nodes and edges.
  */
 @ApplicationScoped
+@JsonIgnoreProperties(value = { "empty" })
 public class Graph {
 
-    @Inject
-    EdgeService edgeService;
-    @Inject
-    NodeService nodeService;
+    private List<NodeDTO> nodes = new ArrayList<>();
+    private List<Edge> edges = new ArrayList<>();
 
-    private List<Node> nodes = new LinkedList<>();
-    private List<EdgeDTO> edges = new LinkedList<>();
-
-    public List<Node> getNodes() {
+    public List<NodeDTO> getNodes() {
         return nodes;
     }
 
-    public void setNodes(List<Node> nodes) {
-        if (nodes == null) {
-            nodes = new LinkedList<>();
-        }
-        this.nodes = nodes;
+    public Graph setNodes(@NotNull List<NodeDTO> nodes) {
+        this.nodes = new ArrayList<>();
+        this.nodes.addAll(nodes);
+        return this;
     }
 
-    public List<EdgeDTO> getEdges() {
+    public List<Edge> getEdges() {
         return edges;
     }
 
-    public void setEdges(List<EdgeDTO> edges) {
-        if (edges == null) {
-            edges = new LinkedList<>();
-        }
-        this.edges = edges;
+    public Graph setEdges(@NotNull List<Edge> edges) {
+        this.edges = new ArrayList<>();
+        this.edges.addAll(edges);
+        return this;
     }
 
     @Override
@@ -68,10 +58,12 @@ public class Graph {
                 '}';
     }
 
-    public Graph generateGraph() {
-        Graph graph = new Graph();
-        graph.setNodes(nodeService.findAllNodes());
-        graph.setEdges(edgeService.findAllEdges());
-        return graph;
+    /**
+     * Returns {@code true} if this graph is empty.
+     *
+     * @return {@code true} if this graph is empty
+     */
+    public boolean isEmpty() {
+        return nodes.isEmpty() && edges.isEmpty();
     }
 }
