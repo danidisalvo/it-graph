@@ -7,18 +7,31 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
  * Handles the business logic of a {@link Node}.
+ *
+ * @author Daniele Di Salvo
+ * @since 1.0.0
  */
 @ApplicationScoped
 public class NodeService {
 
     @Inject
     NodeRepository repository;
+
+    /**
+     * Creates an edge from source to target.
+     *
+     * @param source the source
+     * @param target the target
+     */
+    @Transactional
+    public void createEdge(@NotBlank(message = "source must not be blank") String source,
+                           @NotBlank(message = "target must not be blank") String target) {
+        repository.createEdge(source, target);
+    }
 
     /**
      * Creates the given node.
@@ -41,6 +54,19 @@ public class NodeService {
         repository.deleteAllNodes();
     }
 
+
+    /**
+     * Deletes the edge from source to target.
+     *
+     * @param source the source
+     * @param target the target
+     * @return the number of deleted edges
+     */
+    @Transactional
+    public int deleteEdge(String source, String target) {
+        return repository.deleteEdge(source, target);
+    }
+
     /**
      * Deletes the node with the given id.
      *
@@ -53,13 +79,13 @@ public class NodeService {
     }
 
     /**
-     * Returns all nodes.
+     * Returns the graph.
      *
-     * @return all nodes
+     * @return the graph
      */
     @Transactional
-    public List<NodeDTO> findAllNodes() {
-        return repository.findAllNodes();
+    public Graph fetchGraph() {
+        return repository.fetchGraph();
     }
 
     /**
@@ -83,36 +109,4 @@ public class NodeService {
     public int updateNode(@NotNull @Valid Node node) {
         return repository.updateNode(node);
     }
-
-    /**
-     * Deletes the edge from source to target.
-     *
-     * @param source the source
-     * @param target the target
-     * @return the number of deleted edges
-     */
-//    @Transactional
-//    public int deleteEdge(String source, String target) {
-//        var edge = validate(source, target);
-//        edge.getSource().getEdges().remove(edge.getTarget());
-//
-//        var node = edge.getSource().removeEdge(edge.getTarget());
-//        repository.updateNode(node);
-//        return 1;
-//    }
-
-//    public Edge pippo(String source, String target) {
-//        if (Objects.equals(source, target)) {
-//            throw new IllegalArgumentException("Source and target must be different");
-//        }
-//        var src = repository.findNode(source);
-//        if (src == null) {
-//            throw new IllegalArgumentException("Source not found");
-//        }
-//        var tgt = repository.findNode(target);
-//        if (tgt == null) {
-//            throw new IllegalArgumentException("Target not found");
-//        }
-//        return new Edge(src, tgt);
-//    }
 }

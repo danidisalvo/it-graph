@@ -7,6 +7,9 @@ import jakarta.validation.constraints.NotNull;
 
 /**
  * Handles the business logic of a {@link Graph}.
+ *
+ * @author Daniele Di Salvo
+ * @since 1.0.0
  */
 @ApplicationScoped
 public class GraphService {
@@ -32,7 +35,7 @@ public class GraphService {
      */
     @Transactional
     public Graph getGraph() {
-        return new Graph().setNodes(nodeService.findAllNodes()); // TODO edges
+        return nodeService.fetchGraph();
     }
 
     /**
@@ -44,7 +47,9 @@ public class GraphService {
     @Transactional
     public Graph uploadGraph(@NotNull Graph graph) {
         clearGraph();
-        graph.getNodes().forEach(node -> nodeService.createNode(new Node(node)));
-        return graph;
+        graph.getNodes().forEach(node -> nodeService.createNode(node));
+        graph.getEdges().forEach(edge -> nodeService.findNode(edge.source()).orElseThrow()
+                .addEdge(nodeService.findNode(edge.target()).orElseThrow()));
+        return getGraph();
     }
 }

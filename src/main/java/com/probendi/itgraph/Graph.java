@@ -1,39 +1,40 @@
 package com.probendi.itgraph;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
- * A graph contains nodes and edges.
+ * An undirected graph.
+ *
+ * @author Daniele Di Salvo
+ * @since 1.0.0
  */
 @ApplicationScoped
-@JsonIgnoreProperties(value = { "empty" })
 public class Graph {
 
-    private List<NodeDTO> nodes = new ArrayList<>();
-    private List<Edge> edges = new ArrayList<>();
+    private Set<Node> nodes = new TreeSet<>();
+    private Set<Edge> edges = new TreeSet<>();
 
-    public List<NodeDTO> getNodes() {
+    public Set<Node> getNodes() {
         return nodes;
     }
 
-    public Graph setNodes(@NotNull List<NodeDTO> nodes) {
-        this.nodes = new ArrayList<>();
+    public Graph setNodes(@NotNull Set<Node> nodes) {
+        this.nodes = new TreeSet<>();
         this.nodes.addAll(nodes);
         return this;
     }
 
-    public List<Edge> getEdges() {
+    public Set<Edge> getEdges() {
         return edges;
     }
 
-    public Graph setEdges(@NotNull List<Edge> edges) {
-        this.edges = new ArrayList<>();
+    public Graph setEdges(@NotNull Set<Edge> edges) {
+        this.edges = new TreeSet<>();
         this.edges.addAll(edges);
         return this;
     }
@@ -59,11 +60,20 @@ public class Graph {
     }
 
     /**
-     * Returns {@code true} if this graph is empty.
+     * Adds the given node to the nodes.
      *
-     * @return {@code true} if this graph is empty
+     * @param node the node to be added
      */
-    public boolean isEmpty() {
-        return nodes.isEmpty() && edges.isEmpty();
+    public void addNode(@NotNull Node node) {
+        nodes.add(node);
+    }
+
+    /**
+     * Adds the given edge to the edge.
+     *
+     * @param edge the edge to be added
+     */
+    public void addEdge(@NotNull Edge edge) {
+        edges.add(edge);
     }
 }

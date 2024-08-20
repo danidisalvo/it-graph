@@ -9,8 +9,7 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,29 +21,17 @@ class GraphResourceTest {
     @PersistenceContext
     private EntityManager em;
 
-    private final List<NodeDTO> nodes = new ArrayList<>();
-    private final List<Edge> edges = new ArrayList<>();
+    private final Edge ab = new Edge("a", "b");
+    private final Edge ac = new Edge("a", "c");
+
+    private final Node b = new Node("b", 30, 40, NodeType.LEXEME);
+    private final Node c = new Node("c", 50, 60, NodeType.LEXEME);
+    private final Node a = new Node("a", 10, 20, NodeType.OPPOSITION).addEdge(b).addEdge(c);
 
     @BeforeEach
     @Transactional
     public void setup() {
-        nodes.clear();
-        edges.clear();
-
         em.createQuery("delete from Node").executeUpdate();
-
-        nodes.add(new NodeDTO("a", 10, 20, NodeType.OPPOSITION));
-        nodes.add(new NodeDTO("b", 30, 40, NodeType.LEXEME));
-        nodes.add(new NodeDTO("c", 50, 60, NodeType.LEXEME));
-        edges.add(new Edge("a", "b"));
-        edges.add(new Edge("a", "c"));
-
-        Node a = new Node(nodes.get(0));
-        Node b = new Node(nodes.get(1));
-        Node c = new Node(nodes.get(2));
-
-        a.addEdge(b).addEdge(c);
-
         em.persist(a);
         em.persist(b);
         em.persist(c);
@@ -62,12 +49,12 @@ class GraphResourceTest {
                 .body()
                 .extract().as(Graph.class);
 
-        assertTrue(graph.isEmpty());
+        assertTrue(graph.getNodes().isEmpty() && graph.getEdges().isEmpty());
     }
 
     @Test
     public void getGraph() {
-        var graph = new Graph().setNodes(nodes).setEdges(edges);
+        var graph = new Graph().setNodes(Set.of(a, b, c)).setEdges(Set.of(ab, ac));
 
         var actualGraph = given()
                 .when()
@@ -84,15 +71,20 @@ class GraphResourceTest {
 
     @Test
     public void uploadGraph() {
-        var a = new NodeDTO("a", 100, 200, NodeType.OPPOSITION);
-        var b = new NodeDTO("b", 300, 400, NodeType.LEXEME);
-        var c = new NodeDTO("c", 500, 600, NodeType.LEXEME);
+        var a = new Node("a", 100, 200, NodeType.OPPOSITION);
+        var b = new Node("b", 300, 400, NodeType.LEXEME);
+        var c = new Node("c", 500, 600, NodeType.LEXEME);
         var ab = new Edge("a", "b");
         var ac = new Edge("a", "c");
 
         var graph = new Graph();
-        graph.setNodes(List.of(a, b, c));
-        graph.setEdges(List.of(ab, ac));
+        graph.setNodes(Set.of(a, b, c));
+        graph.getEdges().add(ab);
+        graph.getEdges().add(ac);
+
+        // we need to ensure that Edge#compareTo works as expected
+        assertEquals(2, graph.getEdges().size());
+
 
         var actualGraph = given()
                 .contentType(ContentType.JSON)

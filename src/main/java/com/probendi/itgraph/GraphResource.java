@@ -6,6 +6,9 @@ import jakarta.ws.rs.core.MediaType;
 
 /**
  * Exposes the RESTful endpoints to upload and download a graph.
+ *
+ * @author Daniele Di Salvo
+ * @since 1.0.0
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Path("/graph")

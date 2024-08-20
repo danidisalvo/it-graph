@@ -10,11 +10,15 @@ import java.util.*;
 
 /**
  * A graph's node.
+ *
+ * @author Daniele Di Salvo
+ * @since 1.0.0
  */
 @Entity
 @Table(name = "nodes")
 @JsonPropertyOrder({"id", "x", "y", "type"})
-public class Node {
+@SuppressWarnings("unused")
+public class Node implements Comparable<Node> {
 
     @Id
     @NotBlank(message = "id must not be blank")
@@ -44,10 +48,6 @@ public class Node {
         setX(x);
         setY(y);
         setType(type);
-    }
-
-    public Node(NodeDTO node) {
-        this(node.id(), node.x(), node.y(), node.type());
     }
 
     public String getId() {
@@ -98,11 +98,13 @@ public class Node {
 
     public Node addEdge(Node node) {
         edges.add(node);
+        node.getEdges().add(this);
         return this;
     }
 
-    public boolean removeEdge(Node node) {
-        return edges.remove(node);
+    public void removeEdge(Node node) {
+        edges.remove(node);
+        node.getEdges().remove(this);
     }
 
 
@@ -126,6 +128,19 @@ public class Node {
                 ", y=" + y +
                 ", type=" + type +
                 '}';
+    }
+
+    @Override
+    public int compareTo(@NotNull Node o) {
+        return id.compareTo(o.id);
+    }
+
+    /**
+     * Removes the edges of the node that is going to be removed.
+     */
+    @PreRemove
+    private void removeEdges() {
+        new TreeSet<>(edges).forEach(this::removeEdge);
     }
 }
 

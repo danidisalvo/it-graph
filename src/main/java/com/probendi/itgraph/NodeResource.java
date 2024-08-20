@@ -13,6 +13,9 @@ import jakarta.ws.rs.core.MediaType;
 
 /**
  * Exposes the RESTful endpoints to add, delete, and update nodes.
+ *
+ * @author Daniele Di Salvo
+ * @since 1.0.0
  */
 @Path("/nodes")
 @Produces(MediaType.APPLICATION_JSON)
@@ -21,6 +24,7 @@ public class NodeResource {
 
     @Inject
     GraphService graphService;
+
     @Inject
     NodeService nodeService;
 

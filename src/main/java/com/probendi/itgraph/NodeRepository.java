@@ -3,12 +3,14 @@ package com.probendi.itgraph;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 
 import java.util.*;
 
 /**
  * Provides methods for executing CRUD operations on a {@link Node}.
  *
+ * @author Daniele Di Salvo
  * @since 1.0.0
  */
 @ApplicationScoped
@@ -16,6 +18,31 @@ public class NodeRepository {
 
     @PersistenceContext
     private EntityManager em;
+
+    /**
+     * Creates an edge from source to target.
+     *
+     * @param source the source
+     * @param target the target
+     */
+    public void createEdge(String source, String target) {
+        var from = em.find(Node.class, source);
+        if (from == null) {
+            throw new IllegalArgumentException("Source not found");
+        }
+
+        var to = em.find(Node.class, target);
+        if (to == null) {
+            throw new IllegalArgumentException("Target not found");
+        }
+
+        if (from.getEdges().contains(to)) {
+            throw new IllegalArgumentException("Edge already exists");
+        }
+
+        from.getEdges().add(to);
+        em.merge(from);
+    }
 
     /**
      * Creates the given node.
@@ -34,6 +61,34 @@ public class NodeRepository {
     }
 
     /**
+     * Deletes the edge from source to target.
+     *
+     * @param source the source
+     * @param target the target
+     * @return the number of deleted edges
+     */
+    @Transactional
+    public int deleteEdge(String source, String target) {
+        var from = em.find(Node.class, source);
+        if (from == null) {
+            throw new IllegalArgumentException("Source not found");
+        }
+
+        var to = em.find(Node.class, target);
+        if (to == null) {
+            throw new IllegalArgumentException("Target not found");
+        }
+
+        if (from.getEdges().contains(to)) {
+            from.removeEdge(to);
+            em.merge(from);
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
      * Deletes the node with the given id.
      *
      * @param id the id
@@ -42,7 +97,6 @@ public class NodeRepository {
     public int deleteNode(String id) {
         var found = em.find(Node.class, id);
         if (found != null) {
-            em.createNamedQuery("Edge.deleteMany").setParameter("id", found).executeUpdate();
             em.remove(found);
             return 1;
         }
@@ -50,37 +104,33 @@ public class NodeRepository {
     }
 
     /**
-     * Returns all nodes.
+     * Returns the graph.
      *
-     * @return all nodes
+     * @return the graph
      */
     @SuppressWarnings("unchecked")
-    public List<NodeDTO> findAllNodes() {
+    public Graph fetchGraph() {
         List<Object[]> rows = em.createNativeQuery(
                         "SELECT n.id, n.x, n.y, n.type, e.target FROM nodes AS n " +
                                 "LEFT JOIN edges AS e ON n.id = e.source")
                 .getResultList();
 
-        Map<String, NodeDTO> map = new HashMap<>();
+        Graph graph = new Graph();
 
         for (Object[] row : rows) {
             var id = (String) row[0];
             var x = (Integer) row[1];
             var y = (Integer) row[2];
             var type = NodeType.valueOf((String) row[3]);
-            var target = row.length > 4 ? (String) row[4] : null;
+            var target = (String) row[4];
 
-            NodeDTO nodeDTO = map.get(id);
-            if (nodeDTO == null) {
-                nodeDTO = new NodeDTO(id, x, y, type);
-                map.put(id, nodeDTO);
-            }
+            graph.addNode(new Node().setId(id).setX(x).setY(y).setType(type));
             if (target != null) {
-                nodeDTO.edges().add(new Edge(id, target));
+                graph.addEdge(new Edge(id, target));
             }
         }
 
-        return new ArrayList<>(map.values());
+        return graph;
     }
 
     /**
