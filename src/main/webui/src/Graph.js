@@ -139,7 +139,7 @@ const Graph = () => {
     const handleError = (operation, error) => {
         console.error(operation, error);
         if (error.response && error.response.data) {
-            alert(`${operation}: ${error.response.data}`);
+            alert(`${operation}: ${error.response.data.details}`);
         } else {
             alert(`${operation}: ${error.message}`);
         }
@@ -150,11 +150,10 @@ const Graph = () => {
         setEdges(response.data.edges);
     }
 
-    const createEdge = (source) => {
+    const createEdge = (id) => {
         const target = prompt(`Enter the target's name`);
         if (target) {
-            const edge = {source: source, target: target};
-            axios.post('http://localhost:8080/edge', edge)
+            axios.post(`http://localhost:8080/edges/${id}/${target}`)
                 .then(response => {
                     setGraph(response);
                 })
@@ -167,7 +166,7 @@ const Graph = () => {
         if (name) {
             const [x, y] = d3.pointer(event);
             const node = {id: name, x, y, type: lexeme};
-            axios.post('http://localhost:8080/node', node)
+            axios.post('http://localhost:8080/nodes', node)
                 .then(response => {
                     setGraph(response);
                 })
@@ -192,7 +191,7 @@ const Graph = () => {
     const deleteEdge = (id) => {
         const target = prompt(`Enter the target's name`);
         if (target) {
-            axios.delete(`http://localhost:8080/edge/${id}/${target}`)
+            axios.delete(`http://localhost:8080/edges/${id}/${target}`)
                 .then(response => {
                     setGraph(response);
                 })
@@ -205,7 +204,7 @@ const Graph = () => {
         if (!confirm('Do you want to delete the node?')) {
             return;
         }
-        axios.delete(`http://localhost:8080/node/${id}`)
+        axios.delete(`http://localhost:8080/nodes/${id}`)
             .then(response => {
                 setGraph(response);
             })
@@ -221,7 +220,7 @@ const Graph = () => {
     };
 
     const updateNode = (node) => {
-        axios.put(`http://localhost:8080/node/${node.id}`, node)
+        axios.put(`http://localhost:8080/nodes/${node.id}`, node)
             .then(response => {
                 setGraph(response);
 

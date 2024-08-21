@@ -36,7 +36,7 @@ public class NodeRepository {
             throw new IllegalArgumentException("Target not found");
         }
 
-        if (from.getEdges().contains(to)) {
+        if (from.getEdges().contains(to) || to.getEdges().contains(from)) {
             throw new IllegalArgumentException("Edge already exists");
         }
 
