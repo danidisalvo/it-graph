@@ -1,5 +1,6 @@
 package com.probendi.itgraph;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -38,6 +39,7 @@ public class Node implements Comparable<Node> {
             joinColumns = @JoinColumn(name = "source"),
             inverseJoinColumns = @JoinColumn(name = "target")
     )
+    @JsonIgnore
     private Set<Node> edges = new HashSet<>();
 
     public Node() {

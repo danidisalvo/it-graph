@@ -1,0 +1,310 @@
+{
+  "nodes": [
+    {
+      "id": "accidentia",
+      "x": 537,
+      "y": 176,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens",
+      "x": 318,
+      "y": 35,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu",
+      "x": 148,
+      "y": 116,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu - ens in potentia",
+      "x": 211,
+      "y": 79,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens actu in alio",
+      "x": 132,
+      "y": 216,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu in se",
+      "x": 43,
+      "y": 238,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu in se-ens actu in alio",
+      "x": 81,
+      "y": 174,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens actu secundum quid",
+      "x": 287,
+      "y": 290,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu simpliciter",
+      "x": 161,
+      "y": 306,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu simpliciter-secundum quid",
+      "x": 281,
+      "y": 244,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens dividitur per decem praedicamenta",
+      "x": 470,
+      "y": 117,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens immateriale",
+      "x": 591,
+      "y": 441,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia",
+      "x": 274,
+      "y": 137,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia secundum quid",
+      "x": 286,
+      "y": 424,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia simpliciter",
+      "x": 247,
+      "y": 382,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia simpliciter-secundum quid",
+      "x": 343,
+      "y": 334,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens inseparabile",
+      "x": 570,
+      "y": 282,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens intelligibile",
+      "x": 677,
+      "y": 364,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens materiale",
+      "x": 531,
+      "y": 472,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens materiale-ens immateriale",
+      "x": 555,
+      "y": 397,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens secundum quid",
+      "x": 820,
+      "y": 143,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens sensibile",
+      "x": 751,
+      "y": 463,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens sensibile-ens intelligibile",
+      "x": 776,
+      "y": 199,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens separabile",
+      "x": 623,
+      "y": 252,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens separabile-ens inseparabile",
+      "x": 479,
+      "y": 207,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens simpliciter",
+      "x": 703,
+      "y": 80,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens simpliciter-secundum quid",
+      "x": 827,
+      "y": 46,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "substantia",
+      "x": 553,
+      "y": 71,
+      "type": "LEXEME"
+    }
+  ],
+  "edges": [
+    {
+      "source": "accidentia",
+      "target": "ens dividitur per decem praedicamenta"
+    },
+    {
+      "source": "accidentia",
+      "target": "ens inseparabile"
+    },
+    {
+      "source": "accidentia",
+      "target": "ens secundum quid"
+    },
+    {
+      "source": "ens",
+      "target": "ens actu - ens in potentia"
+    },
+    {
+      "source": "ens",
+      "target": "ens dividitur per decem praedicamenta"
+    },
+    {
+      "source": "ens",
+      "target": "ens materiale-ens immateriale"
+    },
+    {
+      "source": "ens",
+      "target": "ens sensibile-ens intelligibile"
+    },
+    {
+      "source": "ens",
+      "target": "ens separabile-ens inseparabile"
+    },
+    {
+      "source": "ens",
+      "target": "ens simpliciter-secundum quid"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu - ens in potentia"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu in se-ens actu in alio"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu simpliciter-secundum quid"
+    },
+    {
+      "source": "ens actu - ens in potentia",
+      "target": "ens in potentia"
+    },
+    {
+      "source": "ens actu in alio",
+      "target": "ens actu in se-ens actu in alio"
+    },
+    {
+      "source": "ens actu in se",
+      "target": "ens actu in se-ens actu in alio"
+    },
+    {
+      "source": "ens actu secundum quid",
+      "target": "ens actu simpliciter-secundum quid"
+    },
+    {
+      "source": "ens actu simpliciter",
+      "target": "ens actu simpliciter-secundum quid"
+    },
+    {
+      "source": "ens dividitur per decem praedicamenta",
+      "target": "substantia"
+    },
+    {
+      "source": "ens immateriale",
+      "target": "ens intelligibile"
+    },
+    {
+      "source": "ens immateriale",
+      "target": "ens materiale-ens immateriale"
+    },
+    {
+      "source": "ens in potentia",
+      "target": "ens in potentia simpliciter-secundum quid"
+    },
+    {
+      "source": "ens in potentia secundum quid",
+      "target": "ens in potentia simpliciter-secundum quid"
+    },
+    {
+      "source": "ens in potentia simpliciter",
+      "target": "ens in potentia simpliciter-secundum quid"
+    },
+    {
+      "source": "ens inseparabile",
+      "target": "ens separabile-ens inseparabile"
+    },
+    {
+      "source": "ens intelligibile",
+      "target": "ens sensibile-ens intelligibile"
+    },
+    {
+      "source": "ens materiale",
+      "target": "ens materiale-ens immateriale"
+    },
+    {
+      "source": "ens materiale",
+      "target": "ens sensibile"
+    },
+    {
+      "source": "ens secundum quid",
+      "target": "ens simpliciter-secundum quid"
+    },
+    {
+      "source": "ens sensibile",
+      "target": "ens sensibile-ens intelligibile"
+    },
+    {
+      "source": "ens sensibile-ens intelligibile",
+      "target": "substantia"
+    },
+    {
+      "source": "ens separabile",
+      "target": "ens separabile-ens inseparabile"
+    },
+    {
+      "source": "ens separabile",
+      "target": "substantia"
+    },
+    {
+      "source": "ens simpliciter",
+      "target": "ens simpliciter-secundum quid"
+    },
+    {
+      "source": "ens simpliciter",
+      "target": "substantia"
+    }
+  ]
+}

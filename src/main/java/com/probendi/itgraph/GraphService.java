@@ -46,7 +46,7 @@ public class GraphService {
      */
     @Transactional
     public Graph uploadGraph(@NotNull Graph graph) {
-        clearGraph();
+        nodeService.deleteAllNodes();
         graph.getNodes().forEach(node -> nodeService.createNode(node));
         graph.getEdges().forEach(edge -> nodeService.findNode(edge.source()).orElseThrow()
                 .addEdge(nodeService.findNode(edge.target()).orElseThrow()));
