@@ -7,6 +7,18 @@
       "type": "LEXEME"
     },
     {
+      "id": "corpus caeleste",
+      "x": 1191,
+      "y": 97,
+      "type": "LEXEME"
+    },
+    {
+      "id": "corpus corruptibile",
+      "x": 1057,
+      "y": 140,
+      "type": "LEXEME"
+    },
+    {
       "id": "ens",
       "x": 318,
       "y": 35,
@@ -23,6 +35,12 @@
       "x": 211,
       "y": 79,
       "type": "OPPOSITION"
+    },
+    {
+      "id": "ens actu hoc",
+      "x": 30,
+      "y": 116,
+      "type": "LEXEME"
     },
     {
       "id": "ens actu in alio",
@@ -61,6 +79,30 @@
       "type": "OPPOSITION"
     },
     {
+      "id": "ens contingens",
+      "x": -6,
+      "y": 450,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens corruptibile",
+      "x": 45,
+      "y": 574,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens corruptibile-ens incorruptibile",
+      "x": 140,
+      "y": 635,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens creatum",
+      "x": 309,
+      "y": -106,
+      "type": "LEXEME"
+    },
+    {
       "id": "ens diminutum",
       "x": 327,
       "y": 194,
@@ -83,6 +125,12 @@
       "x": 198,
       "y": 463,
       "type": "OPPOSITION"
+    },
+    {
+      "id": "ens finitum",
+      "x": 90,
+      "y": -128,
+      "type": "LEXEME"
     },
     {
       "id": "ens immateriale",
@@ -127,6 +175,36 @@
       "type": "OPPOSITION"
     },
     {
+      "id": "ens incorruptibile",
+      "x": -14,
+      "y": 640,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens increatum",
+      "x": 308,
+      "y": -43,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens increatum-ens creatum",
+      "x": 236,
+      "y": -11,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens infinitum",
+      "x": 155,
+      "y": -72,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens infinitum-ens finitum",
+      "x": 81,
+      "y": 4,
+      "type": "OPPOSITION"
+    },
+    {
       "id": "ens inseparabile",
       "x": 570,
       "y": 282,
@@ -134,8 +212,8 @@
     },
     {
       "id": "ens intelligibile",
-      "x": 677,
-      "y": 364,
+      "x": 687,
+      "y": 359,
       "type": "LEXEME"
     },
     {
@@ -151,9 +229,57 @@
       "type": "OPPOSITION"
     },
     {
+      "id": "ens necessarium",
+      "x": -29,
+      "y": 535,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens necessarium-ens contingens",
+      "x": 63,
+      "y": 518,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens per accidens",
+      "x": 75,
+      "y": 367,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens per essentiam",
+      "x": 460,
+      "y": -105,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens per participationem",
+      "x": 585,
+      "y": -4,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens per se",
+      "x": 152,
+      "y": 505,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens per se-ens per accidens",
+      "x": 146,
+      "y": 416,
+      "type": "OPPOSITION"
+    },
+    {
       "id": "ens perfectum",
       "x": 390,
       "y": 596,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens perfectum in aliquo genere",
+      "x": 529,
+      "y": 718,
       "type": "LEXEME"
     },
     {
@@ -163,10 +289,40 @@
       "type": "OPPOSITION"
     },
     {
+      "id": "ens primum creans",
+      "x": 824,
+      "y": -60,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens primum creans-ens primum creatum-ens secundum creatum",
+      "x": 905,
+      "y": 16,
+      "type": "DIVISION"
+    },
+    {
+      "id": "ens primum creatum",
+      "x": 899,
+      "y": -170,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens secundum creatum",
+      "x": 966,
+      "y": 76,
+      "type": "LEXEME"
+    },
+    {
       "id": "ens secundum quid",
       "x": 820,
       "y": 143,
       "type": "LEXEME"
+    },
+    {
+      "id": "ens secundum se perfectum",
+      "x": 365,
+      "y": 652,
+      "type": "OPPOSITION"
     },
     {
       "id": "ens sensibile",
@@ -205,6 +361,36 @@
       "type": "OPPOSITION"
     },
     {
+      "id": "ens universaliter perfectum",
+      "x": 267,
+      "y": 711,
+      "type": "LEXEME"
+    },
+    {
+      "id": "intelligentia",
+      "x": 1093,
+      "y": -178,
+      "type": "LEXEME"
+    },
+    {
+      "id": "intermediate being",
+      "x": 1019,
+      "y": -7,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ipsum esse subsistens",
+      "x": 453,
+      "y": -48,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ipsum esse subsistens-ens per participationem",
+      "x": 482,
+      "y": 11,
+      "type": "OPPOSITION"
+    },
+    {
       "id": "substantia",
       "x": 553,
       "y": 71,
@@ -221,8 +407,20 @@
       "target": "ens inseparabile"
     },
     {
-      "source": "accidentia",
-      "target": "ens secundum quid"
+      "source": "ens secundum quid",
+      "target": "accidentia"
+    },
+    {
+      "source": "corpus corruptibile",
+      "target": "corpus caeleste"
+    },
+    {
+      "source": "corpus corruptibile",
+      "target": "ens materiale"
+    },
+    {
+      "source": "ens secundum creatum",
+      "target": "corpus corruptibile"
     },
     {
       "source": "ens",
@@ -233,7 +431,15 @@
       "target": "ens dividitur per decem praedicamenta"
     },
     {
-      "source": "ens extra animam-ens in animam",
+      "source": "ens",
+      "target": "ens extra animam-ens in animam"
+    },
+    {
+      "source": "ens increatum-ens creatum",
+      "target": "ens"
+    },
+    {
+      "source": "ens infinitum-ens finitum",
       "target": "ens"
     },
     {
@@ -241,24 +447,44 @@
       "target": "ens materiale-ens immateriale"
     },
     {
-      "source": "ens perfectum-ens imperfectum",
+      "source": "ens necessarium-ens contingens",
       "target": "ens"
     },
     {
       "source": "ens",
-      "target": "ens sensibile-ens intelligibile"
+      "target": "ens per se-ens per accidens"
     },
     {
-      "source": "ens",
-      "target": "ens separabile-ens inseparabile"
+      "source": "ens perfectum-ens imperfectum",
+      "target": "ens"
     },
     {
-      "source": "ens",
-      "target": "ens simpliciter-secundum quid"
+      "source": "ens primum creans-ens primum creatum-ens secundum creatum",
+      "target": "ens"
+    },
+    {
+      "source": "ens sensibile-ens intelligibile",
+      "target": "ens"
+    },
+    {
+      "source": "ens separabile-ens inseparabile",
+      "target": "ens"
+    },
+    {
+      "source": "ens simpliciter-secundum quid",
+      "target": "ens"
+    },
+    {
+      "source": "ipsum esse subsistens-ens per participationem",
+      "target": "ens"
     },
     {
       "source": "ens actu",
       "target": "ens actu - ens in potentia"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu hoc"
     },
     {
       "source": "ens actu",
@@ -289,19 +515,63 @@
       "target": "ens actu simpliciter-secundum quid"
     },
     {
-      "source": "ens in potentia",
-      "target": "ens diminutum"
+      "source": "ens contingens",
+      "target": "ens corruptibile"
+    },
+    {
+      "source": "ens contingens",
+      "target": "ens necessarium-ens contingens"
+    },
+    {
+      "source": "ens contingens",
+      "target": "ens per accidens"
+    },
+    {
+      "source": "ens corruptibile",
+      "target": "ens corruptibile-ens incorruptibile"
+    },
+    {
+      "source": "ens incorruptibile",
+      "target": "ens corruptibile-ens incorruptibile"
+    },
+    {
+      "source": "ens per se",
+      "target": "ens corruptibile-ens incorruptibile"
+    },
+    {
+      "source": "ens finitum",
+      "target": "ens creatum"
+    },
+    {
+      "source": "ens creatum",
+      "target": "ens increatum-ens creatum"
+    },
+    {
+      "source": "ens per participationem",
+      "target": "ens creatum"
+    },
+    {
+      "source": "ens primum creatum",
+      "target": "ens creatum"
+    },
+    {
+      "source": "ens diminutum",
+      "target": "ens in potentia"
     },
     {
       "source": "ens dividitur per decem praedicamenta",
       "target": "ens extra animam"
     },
     {
-      "source": "ens dividitur per decem praedicamenta",
-      "target": "substantia"
+      "source": "substantia",
+      "target": "ens dividitur per decem praedicamenta"
     },
     {
-      "source": "ens extra animam-ens in animam",
+      "source": "ens extra animam",
+      "target": "ens extra animam-ens in animam"
+    },
+    {
+      "source": "ens per se",
       "target": "ens extra animam"
     },
     {
@@ -313,6 +583,10 @@
       "target": "ens in mente"
     },
     {
+      "source": "ens finitum",
+      "target": "ens infinitum-ens finitum"
+    },
+    {
       "source": "ens immateriale",
       "target": "ens intelligibile"
     },
@@ -321,8 +595,8 @@
       "target": "ens materiale-ens immateriale"
     },
     {
-      "source": "ens in potentia",
-      "target": "ens imperfectum"
+      "source": "ens imperfectum",
+      "target": "ens in potentia"
     },
     {
       "source": "ens perfectum-ens imperfectum",
@@ -345,28 +619,108 @@
       "target": "ens in potentia simpliciter-secundum quid"
     },
     {
-      "source": "ens inseparabile",
-      "target": "ens separabile-ens inseparabile"
+      "source": "ens necessarium",
+      "target": "ens incorruptibile"
     },
     {
-      "source": "ens intelligibile",
-      "target": "ens sensibile-ens intelligibile"
+      "source": "ens increatum",
+      "target": "ens increatum-ens creatum"
+    },
+    {
+      "source": "ens infinitum",
+      "target": "ens increatum"
+    },
+    {
+      "source": "ipsum esse subsistens",
+      "target": "ens increatum"
+    },
+    {
+      "source": "ens infinitum",
+      "target": "ens infinitum-ens finitum"
+    },
+    {
+      "source": "ens separabile-ens inseparabile",
+      "target": "ens inseparabile"
+    },
+    {
+      "source": "ens sensibile-ens intelligibile",
+      "target": "ens intelligibile"
+    },
+    {
+      "source": "intelligentia",
+      "target": "ens intelligibile"
     },
     {
       "source": "ens materiale",
       "target": "ens materiale-ens immateriale"
     },
     {
-      "source": "ens materiale",
-      "target": "ens sensibile"
+      "source": "ens sensibile",
+      "target": "ens materiale"
     },
     {
-      "source": "ens perfectum-ens imperfectum",
-      "target": "ens perfectum"
+      "source": "ens necessarium",
+      "target": "ens necessarium-ens contingens"
+    },
+    {
+      "source": "ens per accidens",
+      "target": "ens per se-ens per accidens"
+    },
+    {
+      "source": "ipsum esse subsistens",
+      "target": "ens per essentiam"
+    },
+    {
+      "source": "ens per participationem",
+      "target": "ipsum esse subsistens-ens per participationem"
+    },
+    {
+      "source": "ens per se",
+      "target": "ens per se-ens per accidens"
+    },
+    {
+      "source": "ens perfectum",
+      "target": "ens perfectum-ens imperfectum"
+    },
+    {
+      "source": "ens perfectum",
+      "target": "ens secundum se perfectum"
+    },
+    {
+      "source": "ens perfectum in aliquo genere",
+      "target": "ens secundum se perfectum"
+    },
+    {
+      "source": "ens primum creans-ens primum creatum-ens secundum creatum",
+      "target": "ens primum creans"
+    },
+    {
+      "source": "ens primum creans",
+      "target": "ipsum esse subsistens"
+    },
+    {
+      "source": "ens primum creans-ens primum creatum-ens secundum creatum",
+      "target": "ens primum creatum"
+    },
+    {
+      "source": "ens primum creans-ens primum creatum-ens secundum creatum",
+      "target": "ens secundum creatum"
+    },
+    {
+      "source": "ens primum creans-ens primum creatum-ens secundum creatum",
+      "target": "intermediate being"
+    },
+    {
+      "source": "ens primum creatum",
+      "target": "intelligentia"
     },
     {
       "source": "ens secundum quid",
       "target": "ens simpliciter-secundum quid"
+    },
+    {
+      "source": "ens universaliter perfectum",
+      "target": "ens secundum se perfectum"
     },
     {
       "source": "ens sensibile",
@@ -391,6 +745,10 @@
     {
       "source": "ens simpliciter",
       "target": "substantia"
+    },
+    {
+      "source": "ipsum esse subsistens",
+      "target": "ipsum esse subsistens-ens per participationem"
     }
   ]
 }

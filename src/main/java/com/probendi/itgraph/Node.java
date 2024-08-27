@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 
 import java.util.*;
 
@@ -24,9 +23,7 @@ public class Node implements Comparable<Node> {
     @Id
     @NotBlank(message = "id must not be blank")
     private String id;
-    @PositiveOrZero
     private int x;
-    @PositiveOrZero
     private int y;
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -40,7 +37,7 @@ public class Node implements Comparable<Node> {
             inverseJoinColumns = @JoinColumn(name = "target")
     )
     @JsonIgnore
-    private Set<Node> edges = new HashSet<>();
+    private final Set<Node> edges = new HashSet<>();
 
     public Node() {
     }
