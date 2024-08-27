@@ -12,7 +12,7 @@ const Graph = () => {
     const colours = new Map();
     colours.set('LEXEME', 'blue');
     colours.set('DIVISION', 'silver');
-    colours.set('OPPOSITION', 'dimgray');
+    colours.set('OPPOSITION', 'lightgray');
 
     const svgRef = useRef();
     const [nodes, setNodes] = useState([]);
@@ -27,8 +27,8 @@ const Graph = () => {
 
     useEffect(() => {
         const svg = d3.select(svgRef.current)
-            .attr('width', '100%')
-            .attr('height', '100%')
+            .attr('width', '9999')
+            .attr('height', '9999')
             .style('background', '#ffffff')
             .on('contextmenu', function (event) {
                 event.preventDefault();
@@ -42,8 +42,11 @@ const Graph = () => {
             .data(edges)
             .join('line')
             .attr('class', 'edge')
-            .attr('stroke', d => d.type === 'DOTTED' ? 'blue' : '#999')
-            .attr('stroke-dasharray', d => d.type === 'DOTTED' ? '5,5' : '0')
+            .attr('stroke', '#999')
+            .attr('stroke-dasharray', d =>
+                (nodes.find(n => n.id === d.source).type === lexeme &&
+                nodes.find(n => n.id === d.target).type === lexeme) ? '5,5' : '0'
+            )
             .attr('x1', d => nodes.find(n => n.id === d.source).x)
             .attr('y1', d => nodes.find(n => n.id === d.source).y)
             .attr('x2', d => nodes.find(n => n.id === d.target).x)
@@ -76,7 +79,7 @@ const Graph = () => {
             .attr('class', 'text')
             .attr('x', 15)
             .attr('y', 15)
-            .text(d => d.id);
+            .text(d => d.type === lexeme ? d.id : '');
 
         function dragStarted(event, d) {
             d3.select(this).raise().attr('stroke', 'black');
@@ -304,8 +307,10 @@ const Graph = () => {
                 <div className="menu-items">
                     <div className="menu-item" onClick={clearGraph}>Clear Graph</div>
                     <div className="menu-item" onClick={downloadGraph}>Download JSON</div>
-                    <div className="menu-item" onClick={() => document.getElementById('file-input').click()}>Upload File</div>
-                    <input id="file-input" type="file" className="hidden-file-input" onChange={uploadGraph} />
+                    <div className="menu-item" onClick={() => document.getElementById('file-input').click()}>Upload
+                        File
+                    </div>
+                    <input id="file-input" type="file" className="hidden-file-input" onChange={uploadGraph}/>
                 </div>
             )}
             <svg ref={svgRef}></svg>

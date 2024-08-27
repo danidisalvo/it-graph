@@ -26,14 +26,14 @@
     },
     {
       "id": "ens actu in alio",
-      "x": 132,
-      "y": 216,
+      "x": 111,
+      "y": 203,
       "type": "LEXEME"
     },
     {
       "id": "ens actu in se",
-      "x": 43,
-      "y": 238,
+      "x": 37,
+      "y": 216,
       "type": "LEXEME"
     },
     {
@@ -44,21 +44,27 @@
     },
     {
       "id": "ens actu secundum quid",
-      "x": 287,
-      "y": 290,
+      "x": 111,
+      "y": 305,
       "type": "LEXEME"
     },
     {
       "id": "ens actu simpliciter",
-      "x": 161,
-      "y": 306,
+      "x": 167,
+      "y": 271,
       "type": "LEXEME"
     },
     {
       "id": "ens actu simpliciter-secundum quid",
-      "x": 281,
-      "y": 244,
+      "x": 195,
+      "y": 167,
       "type": "OPPOSITION"
+    },
+    {
+      "id": "ens diminutum",
+      "x": 327,
+      "y": 194,
+      "type": "LEXEME"
     },
     {
       "id": "ens dividitur per decem praedicamenta",
@@ -67,15 +73,39 @@
       "type": "OPPOSITION"
     },
     {
+      "id": "ens extra animam",
+      "x": 316,
+      "y": 520,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens extra animam-ens in animam",
+      "x": 198,
+      "y": 463,
+      "type": "OPPOSITION"
+    },
+    {
       "id": "ens immateriale",
-      "x": 591,
-      "y": 441,
+      "x": 615,
+      "y": 413,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens imperfectum",
+      "x": 599,
+      "y": 595,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in mente",
+      "x": 210,
+      "y": 565,
       "type": "LEXEME"
     },
     {
       "id": "ens in potentia",
-      "x": 274,
-      "y": 137,
+      "x": 247,
+      "y": 142,
       "type": "LEXEME"
     },
     {
@@ -110,14 +140,26 @@
     },
     {
       "id": "ens materiale",
-      "x": 531,
-      "y": 472,
+      "x": 575,
+      "y": 502,
       "type": "LEXEME"
     },
     {
       "id": "ens materiale-ens immateriale",
       "x": 555,
       "y": 397,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens perfectum",
+      "x": 390,
+      "y": 596,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens perfectum-ens imperfectum",
+      "x": 449,
+      "y": 511,
       "type": "OPPOSITION"
     },
     {
@@ -191,8 +233,16 @@
       "target": "ens dividitur per decem praedicamenta"
     },
     {
+      "source": "ens extra animam-ens in animam",
+      "target": "ens"
+    },
+    {
       "source": "ens",
       "target": "ens materiale-ens immateriale"
+    },
+    {
+      "source": "ens perfectum-ens imperfectum",
+      "target": "ens"
     },
     {
       "source": "ens",
@@ -239,8 +289,28 @@
       "target": "ens actu simpliciter-secundum quid"
     },
     {
+      "source": "ens in potentia",
+      "target": "ens diminutum"
+    },
+    {
+      "source": "ens dividitur per decem praedicamenta",
+      "target": "ens extra animam"
+    },
+    {
       "source": "ens dividitur per decem praedicamenta",
       "target": "substantia"
+    },
+    {
+      "source": "ens extra animam-ens in animam",
+      "target": "ens extra animam"
+    },
+    {
+      "source": "ens extra animam",
+      "target": "ens perfectum"
+    },
+    {
+      "source": "ens extra animam-ens in animam",
+      "target": "ens in mente"
     },
     {
       "source": "ens immateriale",
@@ -252,7 +322,19 @@
     },
     {
       "source": "ens in potentia",
+      "target": "ens imperfectum"
+    },
+    {
+      "source": "ens perfectum-ens imperfectum",
+      "target": "ens imperfectum"
+    },
+    {
+      "source": "ens in potentia",
       "target": "ens in potentia simpliciter-secundum quid"
+    },
+    {
+      "source": "ens secundum quid",
+      "target": "ens in potentia"
     },
     {
       "source": "ens in potentia secundum quid",
@@ -277,6 +359,10 @@
     {
       "source": "ens materiale",
       "target": "ens sensibile"
+    },
+    {
+      "source": "ens perfectum-ens imperfectum",
+      "target": "ens perfectum"
     },
     {
       "source": "ens secundum quid",
