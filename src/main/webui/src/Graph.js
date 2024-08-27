@@ -19,7 +19,50 @@ const Graph = () => {
     const [edges, setEdges] = useState([]);
     const [selectedNode, setSelectedNode] = useState(null);
     const [contextMenu, setContextMenu] = useState(null);
-    const [menuOpen, setMenuOpen] = useState(false);
+    const [menuOpen, setMenuOpen, ] = useState(false);
+    const [viewBox, setViewBox] = useState({
+        x: 0,
+        y: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            const step = 10;
+            switch (e.key) {
+                case 'ArrowUp':
+                    setViewBox((prev) => ({ ...prev, y: prev.y - step }));
+                    break;
+                case 'ArrowDown':
+                    setViewBox((prev) => ({ ...prev, y: prev.y + step }));
+                    break;
+                case 'ArrowLeft':
+                    setViewBox((prev) => ({ ...prev, x: prev.x - step }));
+                    break;
+                case 'ArrowRight':
+                    setViewBox((prev) => ({ ...prev, x: prev.x + step }));
+                    break;
+                default:
+                    return;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (svgRef.current) {
+            svgRef.current.setAttribute(
+                'viewBox',
+                `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
+            );
+        }
+    }, [viewBox]);
 
     useEffect(() => {
         getGraph();
