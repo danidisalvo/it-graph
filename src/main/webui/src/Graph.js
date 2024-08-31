@@ -127,7 +127,7 @@ const Graph = () => {
             .attr('y', 15)
             .text(d => d.type === lexeme ? d.id : '');
 
-        function dragStarted(event, d) {
+        function dragStarted() {
             d3.select(this).raise().attr('stroke', 'black');
         }
 
