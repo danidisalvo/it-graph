@@ -1,7 +1,13 @@
 package com.probendi.itgraph;
 
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
 /**
@@ -19,10 +25,17 @@ public class EdgeResource {
     NodeService nodeService;
 
     /**
+     * Explicit empty constructor.
+     */
+    public EdgeResource() {
+    }
+
+    /**
      * Creates a new edge from source to target.
      *
      * @param source the source
      * @param target the target
+     * @return the graph
      */
     @POST
     public Graph createEdge(@PathParam("source") String source, @PathParam("target") String target) {

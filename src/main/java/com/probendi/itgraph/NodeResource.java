@@ -28,12 +28,30 @@ public class NodeResource {
     @Inject
     NodeService nodeService;
 
+    /**
+     * Explicit empty constructor.
+     */
+    public NodeResource() {
+    }
+
+    /**
+     * Creates the given node.
+     *
+     * @param node the node to be created
+     * @return the graph
+     */
     @POST
     public Graph createNode(Node node) {
         nodeService.createNode(node);
         return graphService.getGraph();
     }
 
+    /**
+     * Deletes the given node.
+     *
+     * @param id the id of the node to be created
+     * @return the graph
+     */
     @Path("/{id}")
     @DELETE
     public Graph deleteNode(@PathParam("id") String id) {
@@ -43,6 +61,13 @@ public class NodeResource {
         return graphService.getGraph();
     }
 
+    /**
+     * Deletes the given node.
+     *
+     * @param id   the id of the node to be updated
+     * @param node the updated node
+     * @return the graph
+     */
     @Path("/{id}")
     @PUT
     public Graph updateNode(@PathParam("id") String id, Node node) {

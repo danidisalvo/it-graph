@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,6 +21,12 @@ public class NodeService {
 
     @Inject
     NodeRepository repository;
+
+    /**
+     * Explicit empty constructor.
+     */
+    public NodeService() {
+    }
 
     /**
      * Creates an edge from source to target.
@@ -86,6 +93,17 @@ public class NodeService {
     @Transactional
     public Graph fetchGraph() {
         return repository.fetchGraph();
+    }
+
+    /**
+     * Returns the incoming edges of the given target, but the root node.
+     *
+     * @param target the target
+     * @param root   the root nade
+     * @return the incoming edges of the given target
+     */
+    public List<String> findIncomingLexemes(String target, String root) {
+        return repository.findIncomingLexemes(target, root);
     }
 
     /**

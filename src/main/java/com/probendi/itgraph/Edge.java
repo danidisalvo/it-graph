@@ -8,6 +8,8 @@ import java.util.Objects;
 /**
  * The DTO of an edge. The graph is undirected, hence the need of implementing the {@link Comparable} interface.
  *
+ * @param source the source
+ * @param target the target
  * @author Daniele Di Salvo
  * @since 1.0.0
  */

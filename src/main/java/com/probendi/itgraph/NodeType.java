@@ -7,5 +7,16 @@ package com.probendi.itgraph;
  * @since 1.0.0
  */
 public enum NodeType {
-    LEXEME, DIVISION, OPPOSITION
+    /**
+     * Indicates that the node is a lexeme.
+     */
+    LEXEME,
+    /**
+     * Indicates that the node is a division.
+     */
+    DIVISION,
+    /**
+     * Indicates that the node is a binary division.
+     */
+    OPPOSITION
 }

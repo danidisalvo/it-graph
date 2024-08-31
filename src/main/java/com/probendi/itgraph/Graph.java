@@ -19,20 +19,48 @@ public class Graph {
     private Set<Node> nodes = new TreeSet<>();
     private Set<Edge> edges = new TreeSet<>();
 
+    /**
+     * Explicit empty constructor.
+     */
+    public Graph() {
+    }
+
+    /**
+     * Returns the nodes.
+     *
+     * @return the nodes
+     */
     public Set<Node> getNodes() {
         return nodes;
     }
 
+    /**
+     * Sets the nodes.
+     *
+     * @param nodes the nodes to be set
+     * @return this graph
+     */
     public Graph setNodes(@NotNull Set<Node> nodes) {
         this.nodes = new TreeSet<>();
         this.nodes.addAll(nodes);
         return this;
     }
 
+    /**
+     * Returns the edges.
+     *
+     * @return the edges
+     */
     public Set<Edge> getEdges() {
         return edges;
     }
 
+    /**
+     * Sets the edges.
+     *
+     * @param edges the edges to be set
+     * @return this graph
+     */
     public Graph setEdges(@NotNull Set<Edge> edges) {
         this.edges = new TreeSet<>();
         this.edges.addAll(edges);

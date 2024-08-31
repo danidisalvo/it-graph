@@ -5,7 +5,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Provides methods for executing CRUD operations on a {@link Node}.
@@ -18,6 +18,12 @@ public class NodeRepository {
 
     @PersistenceContext
     private EntityManager em;
+
+    /**
+     * Explicit empty constructor.
+     */
+    public NodeRepository() {
+    }
 
     /**
      * Creates an edge from source to target.
@@ -131,6 +137,20 @@ public class NodeRepository {
         }
 
         return graph;
+    }
+
+    /**
+     * Returns the incoming edges of the given target, but the root node.
+     *
+     * @param target the target
+     * @param root   the root nade
+     * @return the incoming edges of the given target
+     */
+    public List<String> findIncomingLexemes(String target, String root) {
+        return em.createNamedQuery("Node.findIncomingLexemes", String.class)
+                .setParameter("target", target)
+                .setParameter("root", root)
+                .getResultList();
     }
 
     /**

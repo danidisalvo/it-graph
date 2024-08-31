@@ -7,7 +7,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
@@ -25,22 +24,22 @@ class GraphResourceTest {
 
     private static final Graph graph = new Graph()
             .setNodes(Set.of(new Node("ens", 0, 0, NodeType.LEXEME),
-                    new Node("B", 10, 10, NodeType.LEXEME),
-                    new Node("C", 20, 20, NodeType.LEXEME),
-                    new Node("D", 30, 30, NodeType.DIVISION),
-                    new Node("E", 40, 40, NodeType.LEXEME),
-                    new Node("F", 50, 50, NodeType.LEXEME),
-                    new Node("G", 60, 60, NodeType.DIVISION),
-                    new Node("H", 70, 70, NodeType.LEXEME),
-                    new Node("I", 80, 80, NodeType.LEXEME)))
-            .setEdges(Set.of(new Edge("ens", "B"),
-                    new Edge("ens", "C"),
-                    new Edge("ens", "D"),
-                    new Edge("ens", "E"),
-                    new Edge("D", "F"),
-                    new Edge("D", "G"),
-                    new Edge("G", "H"),
-                    new Edge("G", "I"))
+                    new Node("bravo", 10, 10, NodeType.LEXEME),
+                    new Node("charlie", 20, 20, NodeType.LEXEME),
+                    new Node("delta", 30, 30, NodeType.DIVISION),
+                    new Node("echo", 40, 40, NodeType.LEXEME),
+                    new Node("fox trot", 50, 50, NodeType.LEXEME),
+                    new Node("golf", 60, 60, NodeType.DIVISION),
+                    new Node("hotel", 70, 70, NodeType.LEXEME),
+                    new Node("india", 80, 80, NodeType.LEXEME)))
+            .setEdges(Set.of(new Edge("ens", "bravo"),
+                    new Edge("ens", "charlie"),
+                    new Edge("ens", "delta"),
+                    new Edge("ens", "echo"),
+                    new Edge("delta", "fox trot"),
+                    new Edge("delta", "golf"),
+                    new Edge("golf", "hotel"),
+                    new Edge("golf", "india"))
             );
 
     @PersistenceContext
@@ -58,8 +57,16 @@ class GraphResourceTest {
         graph.getEdges().forEach(e ->
                 em.createNativeQuery(String.format(INSERT_EDGE, e.source(), e.target())).executeUpdate());
 
-        if (testInfo.getTags().contains("stringify-graph")) {
-            em.createNativeQuery(String.format(INSERT_EDGE, "C", "H")).executeUpdate();
+        if (testInfo.getDisplayName().startsWith("stringifyGraph")) {
+            em.createNativeQuery(String.format(INSERT_EDGE, "charlie", "echo")).executeUpdate();
+            em.createNativeQuery(String.format(INSERT_EDGE, "charlie", "hotel")).executeUpdate();
+            if (testInfo.getDisplayName().contains("Hotel")) {
+                em.createNativeQuery("delete from edges where target='fox trot'").executeUpdate();
+                em.createNativeQuery("delete from nodes where id='fox trot'").executeUpdate();
+                var query = String.format(INSERT_NODE, "fox", 50, 50, NodeType.LEXEME);
+                em.createNativeQuery(query).executeUpdate();
+                em.createNativeQuery(String.format(INSERT_EDGE, "delta", "fox")).executeUpdate();
+            }
         }
     }
 
@@ -126,16 +133,42 @@ class GraphResourceTest {
     }
 
     @Test
-    @Tag("stringify-graph")
-    public void stringifyGraph() {
+    public void stringifyGraph_FoxTrot() {
         var expected = """
                 1 ens
-                1.1 B
-                1.2 C
-                1.3.1 F
-                1.3.2.1 H
-                1.3.2.2 I
-                1.4 E
+                1.1 bravo
+                1.2 charlie ...... echo
+                            ...... hotel
+                1.3.1 fox trot
+                1.3.2.1 hotel .... charlie
+                1.3.2.2 india
+                1.4 echo ......... charlie
+                """;
+
+        var actual = given()
+                .when()
+                .get("/graph/printout/ens")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(ContentType.TEXT)
+                .log()
+                .body()
+                .extract()
+                .asString();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void stringifyGraph_Hotel() {
+        var expected = """
+                1 ens
+                1.1 bravo
+                1.2 charlie ..... echo
+                            ..... hotel
+                1.3.1 fox
+                1.3.2.1 hotel ... charlie
+                1.3.2.2 india
+                1.4 echo ........ charlie
                 """;
 
         var actual = given()
@@ -155,12 +188,12 @@ class GraphResourceTest {
     public void stringifyTree() {
         var expected = """
                 1 ens
-                1.1 B
-                1.2 C
-                1.3.1 F
-                1.3.2.1 H
-                1.3.2.2 I
-                1.4 E
+                1.1 bravo
+                1.2 charlie
+                1.3.1 fox trot
+                1.3.2.1 hotel
+                1.3.2.2 india
+                1.4 echo
                 """;
 
         var actual = given()

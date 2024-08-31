@@ -14,6 +14,12 @@ import jakarta.ws.rs.ext.Provider;
 @SuppressWarnings("unused")
 public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
 
+    /**
+     * Explicit empty constructor.
+     */
+    public IllegalArgumentExceptionMapper() {
+    }
+
     @Override
     public Response toResponse(IllegalArgumentException e) {
         return Response.status(Response.Status.BAD_REQUEST)
