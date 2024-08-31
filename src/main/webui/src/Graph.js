@@ -27,6 +27,7 @@ const Graph = () => {
         height: window.innerHeight,
     });
 
+    // Adds the handleKeyDown event listener and its cleanup function only once after the initial render
     useEffect(() => {
         const handleKeyDown = (e) => {
             const step = 10;
@@ -55,19 +56,21 @@ const Graph = () => {
         };
     }, []);
 
-    useEffect(() => {
-        if (svgRef.current) {
-            svgRef.current.setAttribute(
-                'viewBox',
-                `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`
-            );
-        }
-    }, [viewBox]);
-
+    // Loads the graph only once after the initial render
     useEffect(() => {
         getGraph();
     }, []);
 
+    //  Updates the view box attribute of the graph when the view box changes
+    useEffect(() => {
+        if (svgRef.current) {
+            svgRef.current.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+        }
+    }, [viewBox]);
+
+    // Initializes an SVG using D3 by setting its attributes and styles.
+    // Creates and updates its nodes and edges based on the data fetched from the back-end.
+    // Finally, sets up event handlers for dragging nodes and displaying context menus.
     useEffect(() => {
         const svg = d3.select(svgRef.current)
             .attr('width', '9999')
@@ -158,21 +161,25 @@ const Graph = () => {
     // Context Menu Handler
     ///////////////////////////////////////////////////////////////////////////
 
+    // Allows to create an edge
     const createEdgeMenuHandler = () => {
         createEdge(contextMenu.node.id);
         setContextMenu(null);
     }
 
+    // Allows to change the type of a node
     const changeTypeMenuHandler = (newType) => {
         updateNode({...contextMenu.node, type: newType});
         setContextMenu(null);
     }
 
+    // Allows to delete an edge
     const deleteEdgeMenuHandler = () => {
         deleteEdge(contextMenu.node.id);
         setContextMenu(null);
     }
 
+    // Allows to delete a node
     const deleteNodeMenuHandler = () => {
         deleteNode(contextMenu.node.id);
         setContextMenu(null);
@@ -182,44 +189,7 @@ const Graph = () => {
     // REST Calls
     ///////////////////////////////////////////////////////////////////////////
 
-    const handleError = (operation, error) => {
-        console.error(operation, error);
-        if (error.response && error.response.data) {
-            alert(`${operation}: ${error.response.data.details}`);
-        } else {
-            alert(`${operation}: ${error.message}`);
-        }
-    }
-
-    const setGraph = (response) => {
-        setNodes(response.data.nodes);
-        setEdges(response.data.edges);
-    }
-
-    const createEdge = (id) => {
-        const target = prompt(`Enter the target's name`);
-        if (target) {
-            axios.post(`http://localhost:8080/edges/${id}/${target}`)
-                .then(response => {
-                    setGraph(response);
-                })
-                .catch(error => handleError('Failed to create the edge', error));
-        }
-    };
-
-    const createNode = (event) => {
-        const name = prompt(`Enter the new node's name`);
-        if (name) {
-            const [x, y] = d3.pointer(event);
-            const node = {id: name, x, y, type: lexeme};
-            axios.post('http://localhost:8080/nodes', node)
-                .then(response => {
-                    setGraph(response);
-                })
-                .catch(error => handleError('Failed to create the node', error));
-        }
-    };
-
+    // Calls the RESTful end-point that deletes the graph
     const clearGraph = () => {
         /* eslint-disable no-restricted-globals */
         if (!confirm('Do you want to clear the graph?')) {
@@ -234,6 +204,33 @@ const Graph = () => {
             .catch(error => handleError('Failed to clear the graph', error));
     };
 
+    // Calls the RESTful end-point that creates an edge
+    const createEdge = (id) => {
+        const target = prompt(`Enter the target's name`);
+        if (target) {
+            axios.post(`http://localhost:8080/edges/${id}/${target}`)
+                .then(response => {
+                    setGraph(response);
+                })
+                .catch(error => handleError('Failed to create the edge', error));
+        }
+    };
+
+    // Calls the RESTful end-point that creates a node
+    const createNode = (event) => {
+        const name = prompt(`Enter the new node's name`);
+        if (name) {
+            const [x, y] = d3.pointer(event);
+            const node = {id: name, x, y, type: lexeme};
+            axios.post('http://localhost:8080/nodes', node)
+                .then(response => {
+                    setGraph(response);
+                })
+                .catch(error => handleError('Failed to create the node', error));
+        }
+    };
+
+    // Calls the RESTful end-point that deletes an edge
     const deleteEdge = (id) => {
         const target = prompt(`Enter the target's name`);
         if (target) {
@@ -245,6 +242,7 @@ const Graph = () => {
         }
     };
 
+    // Calls the RESTful end-point that deletes a node
     const deleteNode = (id) => {
         /* eslint-disable no-restricted-globals */
         if (!confirm('Do you want to delete the node?')) {
@@ -257,6 +255,7 @@ const Graph = () => {
             .catch(error => handleError('Failed to delete the node', error));
     };
 
+    // Calls the RESTful end-point that returns the graph
     const getGraph = () => {
         axios.get('http://localhost:8080/graph')
             .then(response => {
@@ -265,6 +264,41 @@ const Graph = () => {
             .catch(error => handleError('Failed to get the graph', error));
     };
 
+    // Writes an error to the console and displays an alert dialog box
+    const handleError = (operation, error) => {
+        console.error(operation, error);
+        if (error.response && error.response.data) {
+            alert(`${operation}: ${error.response.data.details}`);
+        } else {
+            alert(`${operation}: ${error.message}`);
+        }
+    }
+
+    // Calls the RESTful end-point that returns a simplified string representation of the graph
+    // and downloads the plain text document
+    const printGraph = () => {
+        axios.get('http://localhost:8080/graph/printout')
+            .then(response => {
+                const blob = new Blob([response], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'graph.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            })
+            .catch(error => handleError('Failed to get the graph', error));
+    };
+
+    // set the nodes and edges from the graph document received from the back-end
+    const setGraph = (response) => {
+        setNodes(response.data.nodes);
+        setEdges(response.data.edges);
+    }
+
+    // Calls the RESTful end-point that updates a node
     const updateNode = (node) => {
         axios.put(`http://localhost:8080/nodes/${node.id}`, node)
             .then(response => {
@@ -274,6 +308,7 @@ const Graph = () => {
             .catch(error => handleError('Failed to update the node', error));
     }
 
+    // Calls the RESTful end-point that returns the graph as a JSON document and downloads it
     const downloadGraph = () => {
         const graphData = {nodes, edges};
         const json = JSON.stringify(graphData, null, 2);
@@ -288,6 +323,7 @@ const Graph = () => {
         URL.revokeObjectURL(url);
     };
 
+    // Calls the RESTful end-point that uploads a graph as a JSON document from the local filesystem
     const uploadGraph = (event) => {
         const file = event.target.files[0];
         const reader = new FileReader();
@@ -302,6 +338,8 @@ const Graph = () => {
         reader.readAsText(file);
     };
 
+    // Renders a graph container with a context menu for node and edge operations
+    // and a burger menu to clear, print, download, and upload s graph.
     return (
         <div className="graph-container">
             {contextMenu && (
@@ -349,6 +387,7 @@ const Graph = () => {
             {menuOpen && (
                 <div className="menu-items">
                     <div className="menu-item" onClick={clearGraph}>Clear Graph</div>
+                    <div className="menu-item" onClick={printGraph}>Print Graph</div>
                     <div className="menu-item" onClick={downloadGraph}>Download JSON</div>
                     <div className="menu-item" onClick={() => document.getElementById('file-input').click()}>Upload
                         File

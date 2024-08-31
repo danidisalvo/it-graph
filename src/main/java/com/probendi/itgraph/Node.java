@@ -109,8 +109,12 @@ public class Node implements Comparable<Node> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Node node)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Node node)) {
+            return false;
+        }
         return Objects.equals(id, node.id);
     }
 

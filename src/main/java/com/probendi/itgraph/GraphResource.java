@@ -48,4 +48,21 @@ public class GraphResource {
     public Graph uploadGraph(Graph graph) {
         return service.uploadGraph(graph);
     }
+
+    /**
+     * Returns a simplified string representation of this graph starting from the given root node.
+     *
+     * @param root the root node
+     * @return a simplified string representation of this graph starting from the given root node
+     */
+    @GET
+    @Path("/printout/{root}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String stringifyGraph(@PathParam("root") String root) {
+        try {
+            return service.stringifyGraph(root);
+        } catch (IllegalArgumentException e) {
+            throw new NotFoundException();
+        }
+    }
 }

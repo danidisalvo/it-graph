@@ -7,7 +7,9 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.util.Set;
 
@@ -18,23 +20,47 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @QuarkusTest
 class GraphResourceTest {
 
+    private static final String INSERT_EDGE = "insert into edges(source,target) values('%s','%s')";
+    private static final String INSERT_NODE = "insert into nodes(id,x,y,type) values('%s',%d,%d,'%s')";
+
+    private static final Graph graph = new Graph()
+            .setNodes(Set.of(new Node("ens", 0, 0, NodeType.LEXEME),
+                    new Node("B", 10, 10, NodeType.LEXEME),
+                    new Node("C", 20, 20, NodeType.LEXEME),
+                    new Node("D", 30, 30, NodeType.DIVISION),
+                    new Node("E", 40, 40, NodeType.LEXEME),
+                    new Node("F", 50, 50, NodeType.LEXEME),
+                    new Node("G", 60, 60, NodeType.DIVISION),
+                    new Node("H", 70, 70, NodeType.LEXEME),
+                    new Node("I", 80, 80, NodeType.LEXEME)))
+            .setEdges(Set.of(new Edge("ens", "B"),
+                    new Edge("ens", "C"),
+                    new Edge("ens", "D"),
+                    new Edge("ens", "E"),
+                    new Edge("D", "F"),
+                    new Edge("D", "G"),
+                    new Edge("G", "H"),
+                    new Edge("G", "I"))
+            );
+
     @PersistenceContext
     private EntityManager em;
 
-    private final Edge ab = new Edge("a", "b");
-    private final Edge ac = new Edge("a", "c");
-
-    private final Node b = new Node("b", 30, 40, NodeType.LEXEME);
-    private final Node c = new Node("c", 50, 60, NodeType.LEXEME);
-    private final Node a = new Node("a", 10, 20, NodeType.OPPOSITION).addEdge(b).addEdge(c);
-
     @BeforeEach
     @Transactional
-    public void setup() {
-        em.createQuery("delete from Node").executeUpdate();
-        em.persist(a);
-        em.persist(b);
-        em.persist(c);
+    public void setup(TestInfo testInfo) {
+        em.createNativeQuery("delete from edges").executeUpdate();
+        em.createNativeQuery("delete from nodes").executeUpdate();
+        graph.getNodes().forEach(n -> {
+            var query = String.format(INSERT_NODE, n.getId(), n.getX(), n.getY(), n.getType());
+            em.createNativeQuery(query).executeUpdate();
+        });
+        graph.getEdges().forEach(e ->
+                em.createNativeQuery(String.format(INSERT_EDGE, e.source(), e.target())).executeUpdate());
+
+        if (testInfo.getTags().contains("stringify-graph")) {
+            em.createNativeQuery(String.format(INSERT_EDGE, "C", "H")).executeUpdate();
+        }
     }
 
     @Test
@@ -54,8 +80,6 @@ class GraphResourceTest {
 
     @Test
     public void getGraph() {
-        var graph = new Graph().setNodes(Set.of(a, b, c)).setEdges(Set.of(ab, ac));
-
         var actualGraph = given()
                 .when()
                 .get("/graph")
@@ -85,7 +109,6 @@ class GraphResourceTest {
         // we need to ensure that Edge#compareTo works as expected
         assertEquals(2, graph.getEdges().size());
 
-
         var actualGraph = given()
                 .contentType(ContentType.JSON)
                 .body(graph)
@@ -100,5 +123,65 @@ class GraphResourceTest {
                 .as(Graph.class);
 
         assertEquals(graph, actualGraph);
+    }
+
+    @Test
+    @Tag("stringify-graph")
+    public void stringifyGraph() {
+        var expected = """
+                1 ens
+                1.1 B
+                1.2 C
+                1.3.1 F
+                1.3.2.1 H
+                1.3.2.2 I
+                1.4 E
+                """;
+
+        var actual = given()
+                .when()
+                .get("/graph/printout/ens")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(ContentType.TEXT)
+                .log()
+                .body()
+                .extract()
+                .asString();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void stringifyTree() {
+        var expected = """
+                1 ens
+                1.1 B
+                1.2 C
+                1.3.1 F
+                1.3.2.1 H
+                1.3.2.2 I
+                1.4 E
+                """;
+
+        var actual = given()
+                .when()
+                .get("/graph/printout/ens")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(ContentType.TEXT)
+                .log()
+                .body()
+                .extract()
+                .asString();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void generatePrintoutNotFound() {
+        given()
+                .when()
+                .get("/graph/printout/not-found")
+                .then()
+                .statusCode(Response.Status.NOT_FOUND.getStatusCode());
     }
 }
