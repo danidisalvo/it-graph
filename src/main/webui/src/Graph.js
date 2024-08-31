@@ -277,7 +277,7 @@ const Graph = () => {
     // Calls the RESTful end-point that returns a simplified string representation of the graph
     // and downloads the plain text document
     const printGraph = () => {
-        axios.get('http://localhost:8080/graph/printout')
+        axios.get('http://localhost:8080/graph/printout/ens')
             .then(response => {
                 const blob = new Blob([response], {type: 'text/plain'});
                 const url = URL.createObjectURL(blob);
