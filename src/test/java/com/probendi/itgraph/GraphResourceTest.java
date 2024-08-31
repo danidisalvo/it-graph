@@ -139,7 +139,9 @@ class GraphResourceTest {
                 1.1 bravo
                 1.2 charlie ...... echo
                             ...... hotel
+                1.3.0 *
                 1.3.1 fox trot
+                1.3.2.0 *
                 1.3.2.1 hotel .... charlie
                 1.3.2.2 india
                 1.4 echo ......... charlie
@@ -165,7 +167,9 @@ class GraphResourceTest {
                 1.1 bravo
                 1.2 charlie ..... echo
                             ..... hotel
+                1.3.0 *
                 1.3.1 fox
+                1.3.2.0 *
                 1.3.2.1 hotel ... charlie
                 1.3.2.2 india
                 1.4 echo ........ charlie
@@ -190,7 +194,9 @@ class GraphResourceTest {
                 1 ens
                 1.1 bravo
                 1.2 charlie
+                1.3.0 *
                 1.3.1 fox trot
+                1.3.2.0 *
                 1.3.2.1 hotel
                 1.3.2.2 india
                 1.4 echo

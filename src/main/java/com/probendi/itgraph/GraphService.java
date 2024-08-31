@@ -174,6 +174,10 @@ public class GraphService {
             }
         }
 
+        if (node.getType() != LEXEME) {
+            lines.add(formatCounters(counters) + " *");
+        }
+
         // handle divisions and oppositions
         node.getEdges().stream().sorted().forEach(t -> {
             if ((root.equals(node.getId()) || node.getType() != LEXEME || t.getType() != LEXEME) &&
