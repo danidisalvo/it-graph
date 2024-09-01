@@ -142,20 +142,7 @@ public class GraphService {
             // add a dotted line if this lexeme is not the root node and is linked to another lexeme
             if (!root.equals(node.getId())) {
                 final var first = new AtomicBoolean(true);
-                // handle the outgoing edges
-                node.getEdges().stream().sorted().forEach(t -> {
-                    if (t.getType() == LEXEME) {
-                        if (first.get()) {
-                            lines.set(lines.size() - 1, lines.getLast() + PLACEHOLDER + t.getId());
-                            first.set(false);
-                        } else {
-                            lines.add(PLACEHOLDER + t.getId());
-                        }
-                    }
-                });
-
-                // handle the incoming edges
-                nodeService.findIncomingLexemes(node.getId(), root).forEach(t -> {
+                nodeService.fetchLinkedLexemes(node.getId(), root).forEach(t -> {
                     if (first.get()) {
                         lines.set(lines.size() - 1, lines.getLast() + PLACEHOLDER + t);
                         first.set(false);

@@ -1,7 +1,7 @@
 package com.probendi.itgraph;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 

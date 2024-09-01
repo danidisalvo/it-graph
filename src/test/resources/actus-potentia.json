@@ -1,0 +1,152 @@
+{
+  "nodes": [
+    {
+      "id": "ens",
+      "x": 907,
+      "y": 278,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu",
+      "x": 875,
+      "y": 111,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu-ens in potentia",
+      "x": 909,
+      "y": 177,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens actu hoc",
+      "x": 870,
+      "y": 66,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu in alio",
+      "x": 733,
+      "y": 127,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu in se",
+      "x": 608,
+      "y": 83,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu in se-ens actu in alio",
+      "x": 747,
+      "y": 100,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens actu secundum quid",
+      "x": 792,
+      "y": 22,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu simpliciter",
+      "x": 626,
+      "y": 36,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens actu simpliciter-secundum quid",
+      "x": 786,
+      "y": 80,
+      "type": "OPPOSITION"
+    },
+    {
+      "id": "ens diminutum",
+      "x": 1005,
+      "y": 86,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia",
+      "x": 991,
+      "y": 126,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia secundum quid",
+      "x": 1188,
+      "y": 72,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia simpliciter",
+      "x": 1056,
+      "y": 19,
+      "type": "LEXEME"
+    },
+    {
+      "id": "ens in potentia simpliciter-secundum quid",
+      "x": 1125,
+      "y": 61,
+      "type": "OPPOSITION"
+    }
+  ],
+  "edges": [
+    {
+      "source": "ens",
+      "target": "ens actu-ens in potentia"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu-ens in potentia"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu hoc"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu in se-ens actu in alio"
+    },
+    {
+      "source": "ens actu",
+      "target": "ens actu simpliciter-secundum quid"
+    },
+    {
+      "source": "ens actu-ens in potentia",
+      "target": "ens in potentia"
+    },
+    {
+      "source": "ens actu in alio",
+      "target": "ens actu in se-ens actu in alio"
+    },
+    {
+      "source": "ens actu in se",
+      "target": "ens actu in se-ens actu in alio"
+    },
+    {
+      "source": "ens actu secundum quid",
+      "target": "ens actu simpliciter-secundum quid"
+    },
+    {
+      "source": "ens actu simpliciter",
+      "target": "ens actu simpliciter-secundum quid"
+    },
+    {
+      "source": "ens diminutum",
+      "target": "ens in potentia"
+    },
+    {
+      "source": "ens in potentia",
+      "target": "ens in potentia simpliciter-secundum quid"
+    },
+    {
+      "source": "ens in potentia secundum quid",
+      "target": "ens in potentia simpliciter-secundum quid"
+    },
+    {
+      "source": "ens in potentia simpliciter",
+      "target": "ens in potentia simpliciter-secundum quid"
+    }
+  ]
+}

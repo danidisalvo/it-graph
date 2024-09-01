@@ -1,7 +1,9 @@
 package com.probendi.itgraph;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
+import java.io.IOException;
 import java.util.Set;
 
 import static io.restassured.RestAssured.given;
@@ -45,11 +48,23 @@ class GraphResourceTest {
     @PersistenceContext
     private EntityManager em;
 
+    @Inject
+    GraphService graphService;
+
     @BeforeEach
     @Transactional
-    public void setup(TestInfo testInfo) {
+    public void setup(TestInfo testInfo) throws IOException {
         em.createNativeQuery("delete from edges").executeUpdate();
         em.createNativeQuery("delete from nodes").executeUpdate();
+
+        if (testInfo.getDisplayName().contains("stringifyGraph_ActusPotentia")) {
+            try (var is = getClass().getClassLoader().getResourceAsStream("actus-potentia.json")) {
+                var graph = new ObjectMapper().readValue(is, Graph.class);
+                graphService.uploadGraph(graph);
+            }
+            return;
+        }
+
         graph.getNodes().forEach(n -> {
             var query = String.format(INSERT_NODE, n.getId(), n.getX(), n.getY(), n.getType());
             em.createNativeQuery(query).executeUpdate();
@@ -173,6 +188,37 @@ class GraphResourceTest {
                 1.3.2.1 hotel ... charlie
                 1.3.2.2 india
                 1.4 echo ........ charlie
+                """;
+
+        var actual = given()
+                .when()
+                .get("/graph/printout/ens")
+                .then()
+                .statusCode(Response.Status.OK.getStatusCode())
+                .contentType(ContentType.TEXT)
+                .log()
+                .body()
+                .extract()
+                .asString();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void stringifyGraph_ActusPotentia() {
+        var expected = """
+                1 ens
+                1.1.0 *
+                1.1.1 ens actu ............................ ens actu hoc
+                1.1.1.1.0 *
+                1.1.1.1.1 ens actu in alio
+                1.1.1.1.2 ens actu in se
+                1.1.1.2.0 *
+                1.1.1.2.1 ens actu secundum quid
+                1.1.1.2.2 ens actu simpliciter
+                1.1.2 ens in potentia ..................... ens diminutum
+                1.1.2.1.0 *
+                1.1.2.1.1 ens in potentia secundum quid
+                1.1.2.1.2 ens in potentia simpliciter
                 """;
 
         var actual = given()

@@ -16,6 +16,16 @@ import java.util.List;
 @ApplicationScoped
 public class NodeRepository {
 
+    private static final String FETCH_GRAPH_QUERY =
+            "SELECT n.id, n.x, n.y, n.type, e.target FROM nodes AS n LEFT JOIN edges AS e ON n.id = e.source";
+
+    private static final String FETCH_LEXEME_RELATED_EDGES_QUERY =
+            "(SELECT e.source FROM edges e INNER JOIN nodes n ON e.source = n.id " +
+            "WHERE e.target = :node AND n.type = 'LEXEME' AND e.source != :root) " +
+            "UNION " +
+            "(SELECT e.target FROM edges e INNER JOIN nodes n ON e.target = n.id " +
+            "WHERE e.source = :node AND n.type = 'LEXEME' AND e.target != :root)";
+
     @PersistenceContext
     private EntityManager em;
 
@@ -116,10 +126,7 @@ public class NodeRepository {
      */
     @SuppressWarnings("unchecked")
     public Graph fetchGraph() {
-        List<Object[]> rows = em.createNativeQuery(
-                        "SELECT n.id, n.x, n.y, n.type, e.target FROM nodes AS n " +
-                                "LEFT JOIN edges AS e ON n.id = e.source")
-                .getResultList();
+        List<Object[]> rows = em.createNativeQuery(FETCH_GRAPH_QUERY).getResultList();
 
         Graph graph = new Graph();
 
@@ -140,15 +147,16 @@ public class NodeRepository {
     }
 
     /**
-     * Returns the incoming edges of the given target, but the root node.
+     * Returns the IDs of all lexemes linked to the given node, root node excluded.
      *
-     * @param target the target
-     * @param root   the root nade
-     * @return the incoming edges of the given target
+     * @param node the node
+     * @param root the root node
+     * @return the IDs of all lexemes linked to the given node, root node excluded
      */
-    public List<String> findIncomingLexemes(String target, String root) {
-        return em.createNamedQuery("Node.findIncomingLexemes", String.class)
-                .setParameter("target", target)
+    @SuppressWarnings("unchecked")
+    public List<String> fetchLinkedLexemes(String node, String root) {
+        return em.createNativeQuery(FETCH_LEXEME_RELATED_EDGES_QUERY, String.class)
+                .setParameter("node", node)
                 .setParameter("root", root)
                 .getResultList();
     }

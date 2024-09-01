@@ -20,12 +20,6 @@ import java.util.TreeSet;
 @Entity
 @Table(name = "nodes")
 @JsonPropertyOrder({"id", "x", "y", "type"})
-@NamedNativeQuery(
-        name = "Node.findIncomingLexemes",
-        query = "SELECT e.source FROM edges e INNER JOIN nodes n ON e.source = n.id " +
-                "WHERE e.target = :target AND n.type = 'LEXEME' AND e.source != :root ORDER BY e.source",
-        resultClass = String.class
-)
 @SuppressWarnings("unused")
 public class Node implements Comparable<Node> {
 

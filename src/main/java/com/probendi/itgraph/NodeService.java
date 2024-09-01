@@ -96,14 +96,14 @@ public class NodeService {
     }
 
     /**
-     * Returns the incoming edges of the given target, but the root node.
+     * Returns the IDs of all lexemes linked to the given node, root node excluded.
      *
-     * @param target the target
-     * @param root   the root nade
-     * @return the incoming edges of the given target
+     * @param node the node
+     * @param root the root node
+     * @return the IDs of all lexemes linked to the given node, root node excluded
      */
-    public List<String> findIncomingLexemes(String target, String root) {
-        return repository.findIncomingLexemes(target, root);
+    public List<String> fetchLinkedLexemes(String node, String root) {
+        return repository.fetchLinkedLexemes(node, root);
     }
 
     /**
