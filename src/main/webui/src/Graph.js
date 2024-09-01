@@ -279,7 +279,7 @@ const Graph = () => {
     const printGraph = () => {
         axios.get('http://localhost:8080/graph/printout/ens')
             .then(response => {
-                const blob = new Blob([response], {type: 'text/plain'});
+                const blob = new Blob([response.data], {type: 'text/plain'});
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
