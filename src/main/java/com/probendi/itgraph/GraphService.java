@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -77,8 +78,11 @@ public class GraphService {
      * @return a simplified string representation of this graph starting from the given root node
      */
     @Transactional
-    public String stringifyGraph(@NotBlank String root) {
-        var node = nodeService.findNode(root).orElseThrow(IllegalArgumentException::new);
+    public Optional<String> stringifyGraph(@NotBlank String root) {
+        var node = nodeService.findNode(root).orElse(null);
+        if (node == null) {
+            return Optional.empty();
+        }
 
         var lines = new ArrayList<String>();
         var counters = new ArrayList<Integer>();
@@ -112,7 +116,7 @@ public class GraphService {
             }
             sb.append(line).append("\n");
         }
-        return sb.toString();
+        return Optional.of(sb.toString());
     }
 
     /**

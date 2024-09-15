@@ -72,10 +72,6 @@ public class GraphResource {
     @Path("/printout/{root}")
     @Produces(MediaType.TEXT_PLAIN)
     public String stringifyGraph(@PathParam("root") String root) {
-        try {
-            return service.stringifyGraph(root);
-        } catch (IllegalArgumentException e) {
-            throw new NotFoundException();
-        }
+        return service.stringifyGraph(root).orElseThrow(NotFoundException::new);
     }
 }
