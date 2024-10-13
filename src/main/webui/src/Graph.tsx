@@ -1,7 +1,47 @@
 import React, {useEffect, useRef, useState} from 'react';
-import * as d3 from 'd3';
 import axios from 'axios';
+import * as d3 from 'd3';
 import './Graph.css';
+
+interface Edge {
+    source: string;
+    target: string;
+}
+
+interface Node {
+    id: string;
+    x: number;
+    y: number;
+    type: string;
+}
+
+interface GraphResponse {
+    edges: Edge[];
+    nodes: Node[];
+    // data: {
+    // }
+}
+
+interface EdgeContextMenu {
+    edge: Edge;
+    x: number;
+    y: number;
+}
+
+interface NodeContextMenu {
+    node: Node;
+    x: number;
+    y: number;
+}
+
+interface ErrorResponse {
+    response?: {
+        data?: {
+            details?: string;
+        };
+    };
+    message?: string;
+}
 
 const Graph = () => {
 
@@ -14,11 +54,12 @@ const Graph = () => {
     colours.set('DIVISION', 'silver');
     colours.set('OPPOSITION', 'lightgray');
 
-    const svgRef = useRef();
-    const [nodes, setNodes] = useState([]);
-    const [edges, setEdges] = useState([]);
-    const [selectedNode, setSelectedNode] = useState(null);
-    const [contextMenu, setContextMenu] = useState(null);
+    const svgRef = useRef<SVGSVGElement | null>(null);
+    const [nodes, setNodes] = useState<Node[]>([]);
+    const [edges, setEdges] = useState<Edge[]>([]);
+    const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+    const [edgeContextMenu, setEdgeContextMenu] = useState<EdgeContextMenu | null>(null);
+    const [nodeContextMenu, setNodeContextMenu] = useState<NodeContextMenu | null>(null);
     const [menuOpen, setMenuOpen, ] = useState(false);
     const [viewBox, setViewBox] = useState({
         x: 0,
@@ -29,7 +70,7 @@ const Graph = () => {
 
     // Adds the handleKeyDown event listener and its cleanup function only once after the initial render
     useEffect(() => {
-        const handleKeyDown = (e) => {
+        const handleKeyDown = (e: KeyboardEvent) => {
             const step = 10;
             switch (e.key) {
                 case 'ArrowUp':
@@ -89,65 +130,124 @@ const Graph = () => {
             .join('line')
             .attr('class', 'edge')
             .attr('stroke', '#999')
-            .attr('stroke-dasharray', d =>
-                (nodes.find(n => n.id === d.source).type === lexeme &&
-                nodes.find(n => n.id === d.target).type === lexeme) ? '5,5' : '0'
-            )
-            .attr('x1', d => nodes.find(n => n.id === d.source).x)
-            .attr('y1', d => nodes.find(n => n.id === d.source).y)
-            .attr('x2', d => nodes.find(n => n.id === d.target).x)
-            .attr('y2', d => nodes.find(n => n.id === d.target).y)
-            .on('contextmenu', function (event, d) {
+            .attr('stroke-dasharray', (d: Edge) => {
+                const sourceNode = nodes.find((n: Node) => n.id === d.source);
+                const targetNode = nodes.find((n: Node) => n.id === d.target);
+
+                if (sourceNode && targetNode) {
+                    return (sourceNode.type === lexeme && targetNode.type === lexeme) ? '5,5' : '0';
+                }
+                return '0';
+            })
+            .attr('x1', (d: Edge) => {
+                const sourceNode = nodes.find((n: Node) => n.id === d.source);
+                if (!sourceNode) {
+                    console.error(`Source node with id ${d.source} not found`);
+                    return NaN;
+                }
+                return sourceNode.x;
+            })
+            .attr('y1', (d: Edge) => {
+                const sourceNode = nodes.find((n: Node) => n.id === d.source);
+                if (!sourceNode) {
+                    console.error(`Source node with id ${d.source} not found`);
+                    return NaN;
+                }
+                return sourceNode.y;
+            })
+            .attr('x2', (d: Edge) => {
+                const targetNode = nodes.find((n: Node) => n.id === d.target);
+                if (!targetNode) {
+                    console.error(`Target node with id ${d.target} not found`);
+                    return NaN;
+                }
+                return targetNode.x;
+            })
+            .attr('y2', (d: Edge) => {
+                const targetNode = nodes.find((n: Node) => n.id === d.target);
+                if (!targetNode) {
+                    console.error(`Target node with id ${d.target} not found`);
+                    return NaN;
+                }
+                return targetNode.y;
+            })
+            .on('contextmenu', function (event: MouseEvent, d: Edge) {
                 event.preventDefault();
-                setContextMenu({type: 'edge', edge: d, x: event.clientX, y: event.clientY});
+                setEdgeContextMenu({edge: d, x: event.clientX, y: event.clientY});
             });
 
         const nodeGroup = svg.selectAll('.node-group')
-            .data(nodes, d => d.id)
+            .data(nodes, (d: any) => d.id)
             .join('g')
             .attr('class', 'node-group')
-            .attr('transform', d => `translate(${d.x},${d.y})`)
-            .call(d3.drag()
-                .on('start', dragStarted)
-                .on('drag', dragged)
-                .on('end', dragEnded));
+            .attr('transform', (d: Node) => `translate(${d.x},${d.y})`)
+            // @ts-ignore
+            .call(d3.drag().on('start', dragStarted).on('drag', dragged).on('end', dragEnded));
 
         nodeGroup.append('path')
             .attr('class', 'node')
             .attr('d', d3.symbol().type(d3.symbolCircle).size(200)())
-            .attr('fill', d => colours.get(d.type))
-            .on('contextmenu', function (event, d) {
+            .attr('fill', (d: Node) => colours.get(d.type))
+            .on('contextmenu', function (event: MouseEvent, d: Node) {
                 event.preventDefault();
-                setContextMenu({type: 'node', node: d, x: event.clientX, y: event.clientY});
+                setNodeContextMenu({node: d, x: event.clientX, y: event.clientY});
             });
 
         nodeGroup.append('text')
             .attr('class', 'text')
             .attr('x', 15)
             .attr('y', 15)
-            .text(d => d.type === lexeme ? d.id : '');
+            .text((d: Node) => d.type === lexeme ? d.id : '');
 
-        function dragStarted() {
+        function dragStarted(this: any) {
             d3.select(this).raise().attr('stroke', 'black');
         }
 
-        function dragged(event, d) {
+        function dragged(event: any, d: Node) {
             d.x = event.x;
             d.y = event.y;
 
             edge
-                .attr('x1', d => nodes.find(n => n.id === d.source).x)
-                .attr('y1', d => nodes.find(n => n.id === d.source).y)
-                .attr('x2', d => nodes.find(n => n.id === d.target).x)
-                .attr('y2', d => nodes.find(n => n.id === d.target).y)
+                .attr('x1', (d: Edge) => {
+                    const sourceNode = nodes.find((n: Node) => n.id === d.source);
+                    if (!sourceNode) {
+                        console.error(`Source node with id ${d.source} not found`);
+                        return NaN;
+                    }
+                    return sourceNode.x;
+                })
+                .attr('y1', (d: Edge) => {
+                    const sourceNode = nodes.find((n: Node) => n.id === d.source);
+                    if (!sourceNode) {
+                        console.error(`Source node with id ${d.source} not found`);
+                        return NaN;
+                    }
+                    return sourceNode.y;
+                })
+                .attr('x2', (d: Edge) => {
+                    const targetNode = nodes.find((n: Node) => n.id === d.target);
+                    if (!targetNode) {
+                        console.error(`Target node with id ${d.target} not found`);
+                        return NaN;
+                    }
+                    return targetNode.x;
+                })
+                .attr('y2', (d: Edge) => {
+                    const targetNode = nodes.find((n: Node) => n.id === d.target);
+                    if (!targetNode) {
+                        console.error(`Target node with id ${d.target} not found`);
+                        return NaN;
+                    }
+                    return targetNode.y;
+                })
                 .attr('stroke', '#999');
 
             nodeGroup
-                .attr('transform', d => `translate(${d.x},${d.y})`)
-                .attr('fill', d => colours.get(d.type));
+                .attr('transform', (d: Node) => `translate(${d.x},${d.y})`)
+                .attr('fill', (d: Node) => colours.get(d.type));
         }
 
-        function dragEnded(event, d) {
+        function dragEnded(this: any, d: Node) {
             d3.select(this).attr('stroke', null);
             updateNode(d);
         }
@@ -163,26 +263,34 @@ const Graph = () => {
 
     // Allows to create an edge
     const createEdgeMenuHandler = () => {
-        createEdge(contextMenu.node.id);
-        setContextMenu(null);
+        if (nodeContextMenu != null) {
+            createEdge(nodeContextMenu.node.id);
+            setNodeContextMenu(null);
+        }
     }
 
     // Allows to change the type of a node
-    const changeTypeMenuHandler = (newType) => {
-        updateNode({...contextMenu.node, type: newType});
-        setContextMenu(null);
+    const changeTypeMenuHandler = (newType: string) => {
+        if (nodeContextMenu != null) {
+            updateNode({...nodeContextMenu.node, type: newType});
+            setNodeContextMenu(null);
+        }
     }
 
     // Allows to delete an edge
     const deleteEdgeMenuHandler = () => {
-        deleteEdge(contextMenu.node.id);
-        setContextMenu(null);
+        if (nodeContextMenu != null) {
+            deleteEdge(nodeContextMenu.node.id);
+            setEdgeContextMenu(null);
+        }
     }
 
     // Allows to delete a node
     const deleteNodeMenuHandler = () => {
-        deleteNode(contextMenu.node.id);
-        setContextMenu(null);
+        if (nodeContextMenu != null) {
+            deleteNode(nodeContextMenu.node.id);
+            setEdgeContextMenu(null);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -195,7 +303,7 @@ const Graph = () => {
         if (!confirm('Do you want to clear the graph?')) {
             return;
         }
-        axios.delete('http://localhost:8080/graph')
+        axios.delete<GraphResponse>('http://localhost:8080/graph')
             .then(() => {
                 setNodes([]);
                 setEdges([]);
@@ -205,67 +313,67 @@ const Graph = () => {
     };
 
     // Calls the RESTful end-point that creates an edge
-    const createEdge = (id) => {
+    const createEdge = (id: string) => {
         const target = prompt(`Enter the target's name`);
         if (target) {
-            axios.post(`http://localhost:8080/edges/${id}/${target}`)
+            axios.post<GraphResponse>(`http://localhost:8080/edges/${id}/${target}`)
                 .then(response => {
-                    setGraph(response);
+                    setGraph(response.data);
                 })
                 .catch(error => handleError('Failed to create the edge', error));
         }
     };
 
     // Calls the RESTful end-point that creates a node
-    const createNode = (event) => {
+    const createNode = (event: MouseEvent) => {
         const name = prompt(`Enter the new node's name`);
         if (name) {
             const [x, y] = d3.pointer(event);
             const node = {id: name, x, y, type: lexeme};
-            axios.post('http://localhost:8080/nodes', node)
+            axios.post<GraphResponse>('http://localhost:8080/nodes', node)
                 .then(response => {
-                    setGraph(response);
+                    setGraph(response.data);
                 })
                 .catch(error => handleError('Failed to create the node', error));
         }
     };
 
     // Calls the RESTful end-point that deletes an edge
-    const deleteEdge = (id) => {
+    const deleteEdge = (id: string) => {
         const target = prompt(`Enter the target's name`);
         if (target) {
-            axios.delete(`http://localhost:8080/edges/${id}/${target}`)
+            axios.delete<GraphResponse>(`http://localhost:8080/edges/${id}/${target}`)
                 .then(response => {
-                    setGraph(response);
+                    setGraph(response.data);
                 })
                 .catch(error => handleError('Failed to delete the edge', error));
         }
     };
 
     // Calls the RESTful end-point that deletes a node
-    const deleteNode = (id) => {
+    const deleteNode = (id: string) => {
         /* eslint-disable no-restricted-globals */
         if (!confirm('Do you want to delete the node?')) {
             return;
         }
-        axios.delete(`http://localhost:8080/nodes/${id}`)
+        axios.delete<GraphResponse>(`http://localhost:8080/nodes/${id}`)
             .then(response => {
-                setGraph(response);
+                setGraph(response.data);
             })
             .catch(error => handleError('Failed to delete the node', error));
     };
 
     // Calls the RESTful end-point that returns the graph
     const getGraph = () => {
-        axios.get('http://localhost:8080/graph')
+        axios.get<GraphResponse>('http://localhost:8080/graph')
             .then(response => {
-                setGraph(response);
+                setGraph(response.data);
             })
             .catch(error => handleError('Failed to get the graph', error));
     };
 
     // Writes an error to the console and displays an alert dialog box
-    const handleError = (operation, error) => {
+    const handleError = (operation: string, error: ErrorResponse) => {
         console.error(operation, error);
         if (error.response && error.response.data) {
             alert(`${operation}: ${error.response.data.details}`);
@@ -277,9 +385,9 @@ const Graph = () => {
     // Calls the RESTful end-point that returns a simplified string representation of the graph
     // and downloads the plain text document
     const printGraph = () => {
-        axios.get('http://localhost:8080/graph/printout/ens')
+        axios.get<GraphResponse>('http://localhost:8080/graph/printout/ens')
             .then(response => {
-                const blob = new Blob([response.data], {type: 'text/plain'});
+                const blob = new Blob([JSON.stringify(response.data)], {type: 'text/plain'});
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -293,16 +401,16 @@ const Graph = () => {
     };
 
     // set the nodes and edges from the graph document received from the back-end
-    const setGraph = (response) => {
-        setNodes(response.data.nodes);
-        setEdges(response.data.edges);
+    const setGraph = (response: GraphResponse) => {
+        setNodes(response.nodes);
+        setEdges(response.edges);
     }
 
     // Calls the RESTful end-point that updates a node
-    const updateNode = (node) => {
-        axios.put(`http://localhost:8080/nodes/${node.id}`, node)
+    const updateNode = (node: Node) => {
+        axios.put<GraphResponse>(`http://localhost:8080/nodes/${node.id}`, node)
             .then(response => {
-                setGraph(response);
+                setGraph(response.data);
 
             })
             .catch(error => handleError('Failed to update the node', error));
@@ -324,14 +432,18 @@ const Graph = () => {
     };
 
     // Calls the RESTful end-point that uploads a graph as a JSON document from the local filesystem
-    const uploadGraph = (event) => {
-        const file = event.target.files[0];
+    const uploadGraph = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
-            const graph = JSON.parse(e.target.result);
-            axios.put(`http://localhost:8080/graph/`, graph)
+            const graph = JSON.parse(e.target?.result as string);
+            axios.put<GraphResponse>(`http://localhost:8080/graph/`, graph)
                 .then(response => {
-                    setGraph(response);
+                    setGraph(response.data);
                 })
                 .catch(error => handleError('Failed to upload the graph', error));
         };
@@ -342,39 +454,39 @@ const Graph = () => {
     // and a burger menu to clear, print, download, and upload s graph.
     return (
         <div className="graph-container">
-            {contextMenu && (
-                <div className="context-menu" style={{top: contextMenu.y, left: contextMenu.x}}>
-                    {contextMenu.type === 'node' && contextMenu.node.type !== lexeme && (
+            {nodeContextMenu && (
+                <div className="context-menu" style={{top: nodeContextMenu.y, left: nodeContextMenu.x}}>
+                    {nodeContextMenu.node.type !== lexeme && (
                         <div onClick={() => changeTypeMenuHandler(lexeme)}>
                             Change type to Lexeme
                         </div>
                     )}
-                    {contextMenu.type === 'node' && contextMenu.node.type !== division && (
+                    {nodeContextMenu.node.type !== division && (
                         <div onClick={() => changeTypeMenuHandler(division)}>
                             Change type to Division
                         </div>
                     )}
-                    {contextMenu.type === 'node' && contextMenu.node.type !== opposition && (
+                    {nodeContextMenu.node.type !== opposition && (
                         <div onClick={() => changeTypeMenuHandler(opposition)}>
                             Change type to Opposition
                         </div>
                     )}
-                    {contextMenu.type === 'node' && (
+                    {(
                         <div onClick={() => createEdgeMenuHandler()}>
                             Create Edge
                         </div>
                     )}
-                    {contextMenu.type === 'node' && (
+                    {(
                         <div onClick={() => deleteNodeMenuHandler()}>
                             Delete Node
                         </div>
                     )}
-                    {contextMenu.type === 'node' && (
+                    {(
                         <div onClick={() => deleteEdgeMenuHandler()}>
                             Delete Edge
                         </div>
                     )}
-                    <div onClick={() => setContextMenu(null)}>
+                    <div onClick={() => setNodeContextMenu(null)}>
                         Close
                     </div>
                 </div>
@@ -389,7 +501,7 @@ const Graph = () => {
                     <div className="menu-item" onClick={clearGraph}>Clear Graph</div>
                     <div className="menu-item" onClick={printGraph}>Print Graph</div>
                     <div className="menu-item" onClick={downloadGraph}>Download JSON</div>
-                    <div className="menu-item" onClick={() => document.getElementById('file-input').click()}>Upload
+                    <div className="menu-item" onClick={() => document.getElementById('file-input')?.click()}>Upload
                         File
                     </div>
                     <input id="file-input" type="file" className="hidden-file-input" onChange={uploadGraph}/>

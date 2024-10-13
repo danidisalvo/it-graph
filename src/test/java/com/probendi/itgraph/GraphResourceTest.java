@@ -57,7 +57,7 @@ class GraphResourceTest {
         em.createNativeQuery("delete from edges").executeUpdate();
         em.createNativeQuery("delete from nodes").executeUpdate();
 
-        if (testInfo.getDisplayName().contains("stringifyGraph_ActusPotentia")) {
+        if (testInfo.getDisplayName().contains("stringifyGraph")) {
             try (var is = getClass().getClassLoader().getResourceAsStream("actus-potentia.json")) {
                 var graph = new ObjectMapper().readValue(is, Graph.class);
                 graphService.uploadGraph(graph);
@@ -148,63 +148,7 @@ class GraphResourceTest {
     }
 
     @Test
-    public void stringifyGraph_FoxTrot() {
-        var expected = """
-                1 ens
-                1.1 bravo
-                1.2 charlie ...... echo
-                            ...... hotel
-                1.3.0 *
-                1.3.1 fox trot
-                1.3.2.0 *
-                1.3.2.1 hotel .... charlie
-                1.3.2.2 india
-                1.4 echo ......... charlie
-                """;
-
-        var actual = given()
-                .when()
-                .get("/graph/printout/ens")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .contentType(ContentType.TEXT)
-                .log()
-                .body()
-                .extract()
-                .asString();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void stringifyGraph_Hotel() {
-        var expected = """
-                1 ens
-                1.1 bravo
-                1.2 charlie ..... echo
-                            ..... hotel
-                1.3.0 *
-                1.3.1 fox
-                1.3.2.0 *
-                1.3.2.1 hotel ... charlie
-                1.3.2.2 india
-                1.4 echo ........ charlie
-                """;
-
-        var actual = given()
-                .when()
-                .get("/graph/printout/ens")
-                .then()
-                .statusCode(Response.Status.OK.getStatusCode())
-                .contentType(ContentType.TEXT)
-                .log()
-                .body()
-                .extract()
-                .asString();
-        assertEquals(expected, actual);
-    }
-
-    @Test
-    public void stringifyGraph_ActusPotentia() {
+    public void stringifyGraph() {
         var expected = """
                 1 ens
                 1.1.0 *

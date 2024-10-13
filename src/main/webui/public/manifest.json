@@ -1,6 +1,6 @@
 {
-  "short_name": "IT Graph",
-  "name": "IT Graph",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
