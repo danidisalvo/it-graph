@@ -18,8 +18,6 @@ interface Node {
 interface GraphResponse {
     edges: Edge[];
     nodes: Node[];
-    // data: {
-    // }
 }
 
 interface EdgeContextMenu {
@@ -247,9 +245,10 @@ const Graph = () => {
                 .attr('fill', (d: Node) => colours.get(d.type));
         }
 
-        function dragEnded(this: any, d: Node) {
+        function dragEnded(this: any, d: any) {
             d3.select(this).attr('stroke', null);
-            updateNode(d);
+            console.log(d.subject);
+            updateNode(d.subject);
         }
 
         return () => {
